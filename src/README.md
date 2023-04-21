@@ -5,7 +5,8 @@ Organization of the code:
 
 Reference implementations:
 
-- SHA256
+- SHA2-256
+- Keccak
 - Poseidon2
 
 ### `Vectors`
