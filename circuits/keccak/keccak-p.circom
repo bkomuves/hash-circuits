@@ -281,11 +281,11 @@ template Iota(level,round_idx) {
     rc[ (1<<j) - 1 ] = CalcSmallRC( j + 7*round_idx );
   }
 
-var rc_sum = 0;
-for(var i=0; i<w; i++) {
-  rc_sum += rc[i] * (1<<i);
-}
-log("round #",round_idx," -> RC = ",rc_sum);
+  // var rc_sum = 0;
+  // for(var i=0; i<w; i++) {
+  //   rc_sum += rc[i] * (1<<i);
+  // }
+  // log("round #",round_idx," -> RC = ",rc_sum);
 
   for(var x=0; x<5; x++) {
     for(var y=0; y<5; y++) {
