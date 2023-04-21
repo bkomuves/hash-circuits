@@ -5,15 +5,13 @@ include "sha_schedule_bits.circom";
 include "sha_rounds_bits.circom";
 
 //------------------------------------------------------------------------------
-// Computes the SHA256 hash of a sequence of bytes
+// Computes the SHA256 hash of a sequence of bits
 
-template Sha256_hash_bytes(n) {
+template Sha256_hash_bits(len) {
 
-  signal input  bytes[n];              // `n` bytes 
-  signal output out_hash_bytes[32];    // 32 bytes (big-endian, as displayed by common sha256 utilities)
-  signal output out_hash_bits[256];    // 256 bits (little-endian, nonstandard order!)
+  signal input  inp[len];              // `n` bits
+  signal output out_hash[256];         // 256 bits (little-endian, kind of nonstandard order!)
 
-  var len     = 8*n;
   var nchunks = ((len + 1 + 64) + 511) \ 512;
   var nbits   = nchunks * 512;
   var pad_k   = nbits - 64 - 1 - len;
@@ -21,18 +19,12 @@ template Sha256_hash_bytes(n) {
   signal input_bits[nchunks*512];
   signal states[nchunks+1][256];
 
-  component tobits[n];
+  for(var i=0; i<len; i++) {
+    inp[i] ==> input_bits[i];
+   }
 
-  for(var j=0; j<n; j++) {
-    tobits[j] = ToBits(8);
-    tobits[j].inp <== bytes[j];
-    for(var i=0; i<8; i++) {
-      tobits[j].out[i] ==> input_bits[ j*8 + 7-i ];
-    }
-  }
-
-  input_bits[8*n] <== 1;
-  for(var i=8*n+1; i<nbits-64; i++) { input_bits[i] <== 0; }
+  input_bits[len] <== 1;
+  for(var i=len+1; i<nbits-64; i++) { input_bits[i] <== 0; }
 
   component len_tb = ToBits(64);
   len_tb.inp <== len;
@@ -75,15 +67,17 @@ template Sha256_hash_bytes(n) {
     rds[m].out_hash_bits ==> states[m+1];
   }
 
-  out_hash_bits <== states[nchunks];
+  out_hash <== states[nchunks];
 
+/*
   for(var k=0; k<32; k++) {
     var sum = 0;
     for(var i=0; i<8; i++) {
-      sum += out_hash_bits[ k*8 + i ] * (1<<i);
+      sum += out_hash[ k*8 + i ] * (1<<i);
     }
     out_hash_bytes[ (k\4)*4 + (3-(k%4)) ] <== sum;
   }
+*/
 
 }
 
