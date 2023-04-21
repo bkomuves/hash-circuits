@@ -1,6 +1,7 @@
 dist
 dist-newstyle
 build
+tmp
 *.hi
 *.o
 *.sym
