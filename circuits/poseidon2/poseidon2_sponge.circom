@@ -1,6 +1,6 @@
 pragma circom 2.0.0;
 
-include "keccak-p.circom";
+include "poseidon2_perm.circom";
 
 //------------------------------------------------------------------------------
 
@@ -10,33 +10,50 @@ function min(a,b) {
 
 //------------------------------------------------------------------------------
 
-template KeccakSponge(level, capacity, input_len, output_len) {
-  var w    = (1<<level);
-  var bits = 25 * w;
-  var rate = bits - capacity;
+//
+// Poseidon sponge construction
+//
+//   t = size of state (currently fixed to 3)
+//   c = capacity (1 or 2)
+//   r = rate = t - c
+//
+// everything is measured in number of field elements 
+//
+// we use the padding `10*` from the original Poseidon paper,
+// and initial state constant zero. Note that this is different 
+// from the "SAFE padding" recommended in the Poseidon2 paper
+// (which uses `0*` padding and a nontrivial initial state)
+//
 
-  assert(rate > 0   );
-  assert(rate < bits);
+template PoseidonSponge(t, capacity, input_len, output_len) {
+
+  var rate = t - capacity;
+
+  assert( t == 3);
+
+  assert( capacity > 0 );
+  assert( rate     > 0 );
+  assert( capacity < t );
+  assert( rate     < t );
 
   signal input  inp[ input_len];
   signal output out[output_len];
 
-  // round up to rate the input + 2 bits ("10*1" padding)
-  var nblocks    = ((input_len + 2) + (rate-1)) \ rate;
+  // round up to rate the input + 1 field element ("10*" padding)
+  var nblocks    = ((input_len + 1) + (rate-1)) \ rate;
   var nout       = (output_len      + (rate-1)) \ rate;
   var padded_len = nblocks * rate;
 
   signal padded[padded_len];
   for(var i=0; i<input_len; i++) { padded[i] <== inp[i]; }
   padded[input_len   ] <== 1;
-  padded[padded_len-1] <== 1;
-  for(var i=input_len+1; i<padded_len-1; i++) { padded[i] <== 0; } 
+  for(var i=input_len+1; i<padded_len; i++) { padded[i] <== 0; } 
 
-  signal state[nblocks+nout][bits];
-  signal xored[nblocks     ][rate];
+  signal state [nblocks+nout][t   ];
+  signal sorbed[nblocks     ][rate];
  
   // initialize state
-  for(var i=0; i<bits; i++) { state[0][i] <== 0; }
+  for(var i=0; i<t; i++) { state[0][i] <== 0; }
 
   component absorb [nblocks];
   component squeeze[nout-1];
@@ -46,12 +63,12 @@ template KeccakSponge(level, capacity, input_len, output_len) {
     for(var i=0; i<rate; i++) {
       var a = state [m][i];
       var b = padded[m*rate+i];
-      xored[m][i] <== a + b - 2*a*b;
+      sorbed[m][i] <== a + b;
     }
  
-    absorb[m] = LinearizedKeccakF(level);
-    for(var j=0   ; j<rate; j++) { absorb[m].inp[j] <== xored[m][j]; }
-    for(var j=rate; j<bits; j++) { absorb[m].inp[j] <== state[m][j]; }
+    absorb[m] = Permutation();
+    for(var j=0   ; j<rate; j++) { absorb[m].inp[j] <== sorbed[m][j]; }
+    for(var j=rate; j<t   ; j++) { absorb[m].inp[j] <== state [m][j]; }
     absorb[m].out ==> state[m+1];
 
   }
@@ -63,7 +80,7 @@ template KeccakSponge(level, capacity, input_len, output_len) {
   var out_ptr = rate;
 
   for(var n=1; n<nout; n++) {
-    squeeze[n-1] = LinearizedKeccakF(level);
+    squeeze[n-1] = Permutation();
     squeeze[n-1].inp <== state[nblocks+n-1];
     squeeze[n-1].out ==> state[nblocks+n  ];
 
