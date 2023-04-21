@@ -5,7 +5,7 @@
 -- based on the wikipedia page <https://en.wikipedia.org/wiki/SHA-2>
 
 {-# LANGUAGE TypeApplications #-}
-module Ref.SHA256.SHA256 where
+module Ref.SHA2.SHA256 where
 
 --------------------------------------------------------------------------------
 

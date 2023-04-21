@@ -1,5 +1,5 @@
 
-module TestVectors.SHA2.Vectors where
+module Vectors.SHA2 where
 
 --------------------------------------------------------------------------------
 
@@ -23,6 +23,7 @@ testVectorsSHA2 hashfun = case hashfun of
 
 infix 1 ~>
 (~>) :: a -> b -> (a,b)
+(~>) x y = (x,y)
 
 --------------------------------------------------------------------------------
 

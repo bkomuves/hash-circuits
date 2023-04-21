@@ -1,5 +1,5 @@
 
-module TestVectors.Keccak.Vectors where
+module Vectors.Keccak where
 
 --------------------------------------------------------------------------------
 
@@ -35,6 +35,7 @@ testVectorsKeccak hashfun = case hashfun of
 
 infix 1 ~>
 (~>) :: a -> b -> (a,b)
+(~>) x y = (x,y)
 
 --------------------------------------------------------------------------------
 

@@ -1,0 +1,67 @@
+Cabal-Version:        2.4
+Name:                 hash-circuits
+Version:              0.1
+Synopsis:             Hash circuits implemented in circom
+
+Description:          Hash circuits (SHA2, Keccak / SHA3, Poseidon2) implemented 
+                      in circom (R1CS / arithmetic circuit) with tests and 
+                      reference implementations in Haskell.
+
+License:              MIT
+License-file:         LICENSE
+Author:               Balazs Komuves
+Copyright:            (c) 2023 Faulhorn Labs
+Maintainer:           balazs.komuves (at) faulhornlabs (dot) com
+Stability:            Experimental
+Category:             Math, Cryptography
+Tested-With:          GHC == 8.6.5, GHC == 9.0.1
+Build-Type:           Simple
+
+--------------------------------------------------------------------------------
+
+Data-Files:           circuits/sha256/*.circom
+                      circuits/keccak/*.circom
+                      circuits/poseidon2/*.circom
+
+extra-doc-files:      README.md
+                      circuits/sha256/README.md
+                      circuits/keccak/README.md
+                      circuits/poseidon2/README.md
+                      src/README.md
+                      src/ref/README.md
+
+--------------------------------------------------------------------------------
+
+executable hash-circuit-tests
+
+  Build-Depends:        base >= 4 && < 5, 
+                        array >= 0.5,
+                        containers >= 0.6, 
+                        filepath >= 1.2,
+                        bytestring >= 0.10,
+                        r1cs-solver == 0.1
+
+  Hs-Source-Dirs:       src
+                                 
+  main-is:              Main.hs
+
+  Other-Modules:        Ref.SHA2.SHA256
+                        Ref.Poseidon2.BN256
+                        Ref.Poseidon2.Example
+                        Ref.Poseidon2.Permutation
+                        Ref.Poseidon2.PrimeField
+                        Ref.Poseidon2.RoundConsts
+                        Ref.Poseidon2.State
+                        Ref.Common
+                        Vectors.SHA2
+                        Vectors.Keccak
+                        Test.Hash.SHA2
+                        Test.Hash.Keccak
+                        Test.Runner
+                        Test.Misc
+
+  Default-Language:     Haskell2010
+  Default-Extensions:   BangPatterns, TypeApplications, ScopedTypeVariables
+
+--------------------------------------------------------------------------------
+

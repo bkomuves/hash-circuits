@@ -9,8 +9,6 @@ include "sha_rounds_bits.circom";
 
 template Sha256_hash_bytes(n) {
 
-  signal input  fake;    // wtf, circom, pls...
-
   signal input  bytes[n];              // `n` bytes 
   signal output out_hash_bytes[32];    // 32 bytes (big-endian, as displayed by common sha256 utilities)
   signal output out_hash_bits[256];    // 256 bits (little-endian!)
