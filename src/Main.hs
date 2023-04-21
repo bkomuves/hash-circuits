@@ -39,7 +39,7 @@ main = do
 
       "sha2"           -> SHA2.runTests_SHA2     verbosity rootDir
       "sha3"           -> Keccak.runTests_SHA3   verbosity rootDir
---      "keccak"         -> Keccak.runTests_Keccak verbosity rootDir
+      "keccak"         -> Keccak.runTests_Keccak verbosity rootDir
       "poseidon2"      -> putStrLn "poseidon2 testsuite not implemented yet"
 
       _ -> do
