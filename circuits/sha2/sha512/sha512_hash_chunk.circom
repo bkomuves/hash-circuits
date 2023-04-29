@@ -11,9 +11,9 @@ include "sha512_initial_value.circom";
 
 template Sha512_hash_chunk() {
 
-  signal input  inp[1024];              // 1024 bits
+  signal input  inp_bits[1024];         // 1024 bits
   signal output out_hash[8][64];        // 512 bits, as 8 little-endian 64-bit words
-  signal output out_bits[512];          // 512 flat bits
+  signal output out_bits[512];          // 512 flat bits, big-endian order
 
   component iv  = Sha512_initial_value();
   component sch = SHA2_384_512_schedule();
@@ -21,7 +21,7 @@ template Sha512_hash_chunk() {
 
   for(var k=0; k<16; k++) {
     for(var i=0; i<64; i++) {
-      sch.chunk_bits[ k*64 + i ] <== inp[ k*64 + (63-i) ];
+      sch.chunk_bits[k][i] <== inp_bits[ k*64 + (63-i) ];
     }
   }
 
@@ -31,7 +31,7 @@ template Sha512_hash_chunk() {
 
   for(var k=0; k<8; k++) {
     for(var i=0; i<64; i++) {
-      out_bits[ 64*k + i ] <== out_hash[k][i];
+      out_bits[ 64*k + i ] <== out_hash[k][63-i];
     }
   }
 

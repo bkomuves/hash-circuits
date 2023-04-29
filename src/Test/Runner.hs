@@ -70,49 +70,160 @@ data SimpleHashTest = SimpleHashTest
 
 --------------------------------------------------------------------------------
 
-runSimpleTest :: Verbosity -> FilePath -> SimpleHashTest -> IO ()
-runSimpleTest verbosity rootdir test = do
+runSimpleTestBytes :: Verbosity -> FilePath -> SimpleHashTest -> IO ()
+runSimpleTestBytes = runSimpleTest' mkInput where
+  mkInput :: String -> Either String ([Int], HsInput)
+  mkInput input_str = Right ([length input_bytes], HsInput input_bytes) where
+    input_bytes = map ordAscii input_str :: [Word8]
+
+runSimpleTestBits :: Verbosity -> FilePath -> SimpleHashTest -> IO ()
+runSimpleTestBits = runSimpleTest' mkInput where
+  mkInput :: String -> Either String ([Int], HsInput)
+  mkInput input_str = Right ([length input_bits], HsInput input_bits) where
+    input_bytes = map ordAscii input_str :: [Word8]
+    input_bits  = concatMap byteToBitsBE input_bytes :: [Bit]
+
+--------------------------------------------------------------------------------
+
+to_8_bytes_BE :: Integer -> [Word8]
+to_8_bytes_BE n = [ byte (7-i) | i <- [0..7] ] where
+  byte :: Int -> Word8
+  byte k = fromIntegral (shiftR n (8*k) .&. 0xff)
+
+to_16_bytes_BE :: Integer -> [Word8]
+to_16_bytes_BE n = [ byte (15-i) | i <- [0..15] ] where
+  byte :: Int -> Word8
+  byte k = fromIntegral (shiftR n (8*k) .&. 0xff)
+
+padBytes_SHA256 :: [Word8] -> [Word8]
+padBytes_SHA256 bs = bs ++ padding where
+  nbytes = length bs
+  bitlen = 8 * nbytes
+  chunks = div (bitlen + 8 + 64 + 511) 512
+  final  = 64*chunks
+  padding = 0x80 : replicate (final - nbytes - 9) 0 ++ to_8_bytes_BE (fromIntegral bitlen)
+
+padBytes_SHA512 :: [Word8] -> [Word8]
+padBytes_SHA512 bs = bs ++ padding where
+  nbytes = length bs
+  bitlen = 8 * nbytes
+  chunks = div (bitlen + 8 + 128 + 1023) 1023
+  final  = 128*chunks
+  padding = 0x80 : replicate (final - nbytes - 17) 0 ++ to_16_bytes_BE (fromIntegral bitlen)
+
+----------------------------------------
+
+runChunkTest_SHA256 :: Verbosity -> FilePath -> SimpleHashTest -> IO ()
+runChunkTest_SHA256 verbosity rootdir test = runSimpleTest'' checkResult mkInput verbosity rootdir test where
+
+  mkInput :: String -> Either String ([Int], HsInput)
+  mkInput input_str = 
+    if orig_bitlen <= 512-64-1
+      then Right ([], HsInput input_bits) 
+      else Left "test skipped, because the input is too big for hash_chunk test"
+    where
+      input_bytes = map ordAscii input_str :: [Word8]
+      input_bits  = concatMap byteToBitsBE $ padBytes_SHA256 input_bytes :: [Bit]
+      orig_bitlen = 8 * length input_bytes
+
+  checkResult wtns expected_output_str = do
+    let result     = extractBits wtns ("main." ++ __outputSignal test)
+        hash_bytes = map byteFromBitsBE $ partition 8 result
+        hash_str   = concatMap toHexString hash_bytes
+
+    if hash_str == expected_output_str
+      then putStrLn "OK."
+      else do
+        putStrLn "FAILED!"
+        putStrLn $ " - expected = " ++ show expected_output_str
+        putStrLn $ " - actual   = " ++ show hash_str
+
+runChunkTest_SHA512 :: Verbosity -> FilePath -> SimpleHashTest -> IO ()
+runChunkTest_SHA512 verbosity rootdir test = runSimpleTest'' checkResult mkInput verbosity rootdir test where
+
+  mkInput :: String -> Either String ([Int], HsInput)
+  mkInput input_str = 
+    if orig_bitlen <= 1024-128-1
+      then Right ([], HsInput input_bits) 
+      else Left "test skipped, because the input is too big for hash_chunk test"
+    where
+      input_bytes = map ordAscii input_str :: [Word8]
+      input_bits  = concatMap byteToBitsBE $ padBytes_SHA512 input_bytes :: [Bit]
+      orig_bitlen = 8 * length input_bytes
+
+  checkResult wtns expected_output_str = do
+    let result     = extractBits wtns ("main." ++ __outputSignal test)
+        hash_bytes = map byteFromBitsBE $ partition 8 result
+        hash_str   = concatMap toHexString hash_bytes
+
+    if hash_str == expected_output_str
+      then putStrLn "OK."
+      else do
+        putStrLn "FAILED!"
+        putStrLn $ " - expected = " ++ show expected_output_str
+        putStrLn $ " - actual   = " ++ show hash_str
+
+--------------------------------------------------------------------------------
+
+runSimpleTest' 
+  :: (String -> Either String ([Int], HsInput)) 
+  -> Verbosity -> FilePath -> SimpleHashTest -> IO ()
+runSimpleTest' mkInput verbosity rootdir test = runSimpleTest'' checkResult mkInput verbosity rootdir test where
+
+  checkResult wtns expected_output_str = do
+
+    let result   = extractBytes wtns ("main." ++ __outputSignal test)
+    let hash_str = concatMap toHexString result
+
+    if hash_str == expected_output_str
+      then putStrLn "OK."
+      else do
+        putStrLn "FAILED!"
+        putStrLn $ " - expected = " ++ show expected_output_str
+        putStrLn $ " - actual   = " ++ show hash_str
+
+----------------------------------------
+
+runSimpleTest'' 
+  :: (Witness Name Integer -> String -> IO ()) 
+  -> (String -> Either String ([Int], HsInput)) 
+  -> Verbosity -> FilePath -> SimpleHashTest -> IO ()
+runSimpleTest'' checkResult mkInput verbosity rootdir test = do
 
   putStrLn $ "\nrunning tests for template `" ++ __templateName test ++ "`"
 
   let circom   = rootdir </> __circomFile test
 
-  forM_ (zip [1..] (__testCases test)) $ \(idx, (input_str, output_str)) -> do
+  forM_ (zip [1..] (__testCases test)) $ \(idx, (input_str, expected_output_str)) -> do
 
     putStr $ "test case #" ++ show idx ++ ": "
     hFlush stdout
-    
-    let input_bytes = map ord input_str :: [Int]
 
-    if null input_str
+    case mkInput input_str of
+      Left  msg -> putStrLn msg
+      Right (template_params, hsinput) -> do
 
-      then do
-        putStrLn "test for empty input string is skipped because of a bug in circom"
+        if null input_str
 
-      else do
-        let maincomp = MainComponent 
-              { _templateName   = __templateName test
-              , _templateParams = [length input_bytes]
-              , _publicInputs   = [__inputSignal test]
-              }
-      
-        circuitfiles <- compileCircomCircuit verbosity circom (Just maincomp)
-        
-        let hsinputs =  HsInputs $ Map.fromList
-              [ (__inputSignal test , HsInput input_bytes)
-              ] 
-    
-        witnessfiles <- computeWitness verbosity circuitfiles hsinputs
-        wtns <- loadWitness_ verbosity circuitfiles witnessfiles
-    
-        let result   = extractBytes wtns ("main." ++ __outputSignal test)
-        let hash_str = concatMap toHexString result
-    
-        if hash_str == output_str
-          then putStrLn "OK."
+          then do
+            putStrLn "test for empty input string is skipped because of a bug in circom"
+
           else do
-            putStrLn "FAILED!"
-            putStrLn $ " - expected = " ++ show output_str
-            putStrLn $ " - actual   = " ++ show hash_str
+            let maincomp = MainComponent 
+                  { _templateName   = __templateName test
+                  , _templateParams = template_params
+                  , _publicInputs   = [__inputSignal test]
+                  }
+          
+            circuitfiles <- compileCircomCircuit verbosity circom (Just maincomp)
+            
+            let hsinputs =  HsInputs $ Map.fromList
+                  [ (__inputSignal test , hsinput)
+                  ] 
+        
+            witnessfiles <- computeWitness verbosity circuitfiles hsinputs
+            wtns <- loadWitness_ verbosity circuitfiles witnessfiles
+        
+            checkResult wtns expected_output_str
 
 --------------------------------------------------------------------------------

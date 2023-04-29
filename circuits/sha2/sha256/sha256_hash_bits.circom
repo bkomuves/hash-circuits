@@ -65,7 +65,7 @@ template Sha256_hash_bits_digest(len) {
   component ser = DWordsToByteString(8);
 
   inp_bits        ==> sha.inp_bits;
-  sha.hash_qwords ==> ser.inp;
+  sha.hash_dwords ==> ser.inp;
   ser.out         ==> hash_bytes;
 }
 

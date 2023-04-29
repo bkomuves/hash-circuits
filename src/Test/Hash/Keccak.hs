@@ -90,10 +90,10 @@ runTests_SHA3 verbosity rootDir = do
 
   putStrLn "running test for SHA3..."
 
-  runSimpleTest verbosity rootDir sha3_224_test
-  runSimpleTest verbosity rootDir sha3_256_test
-  runSimpleTest verbosity rootDir sha3_384_test
-  runSimpleTest verbosity rootDir sha3_512_test
+  runSimpleTestBytes verbosity rootDir sha3_224_test
+  runSimpleTestBytes verbosity rootDir sha3_256_test
+  runSimpleTestBytes verbosity rootDir sha3_384_test
+  runSimpleTestBytes verbosity rootDir sha3_512_test
 
 --------------------------------------------------------------------------------
 
@@ -102,9 +102,9 @@ runTests_Keccak verbosity rootDir = do
 
   putStrLn "running test for Keccak..."
 
-  runSimpleTest verbosity rootDir keccak_224_test
-  runSimpleTest verbosity rootDir keccak_256_test
-  runSimpleTest verbosity rootDir keccak_384_test
-  runSimpleTest verbosity rootDir keccak_512_test
+  runSimpleTestBytes verbosity rootDir keccak_224_test
+  runSimpleTestBytes verbosity rootDir keccak_256_test
+  runSimpleTestBytes verbosity rootDir keccak_384_test
+  runSimpleTestBytes verbosity rootDir keccak_512_test
 
 --------------------------------------------------------------------------------

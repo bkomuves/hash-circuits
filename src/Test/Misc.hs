@@ -4,11 +4,27 @@ module Test.Misc where
 --------------------------------------------------------------------------------
 
 import Data.Bits
+import Data.Char
 import Data.Word
 
 import R1CS
 
 --------------------------------------------------------------------------------
+
+ordAscii :: Char -> Word8
+ordAscii = fromIntegral . ord
+
+--------------------------------------------------------------------------------
+
+byteToBitsBE :: Word8 -> [Bit]
+byteToBitsBE k = [ case shiftR k (7-i) .&. 1 of { 0 -> Zero ; 1 -> One } | i <- [0..7] ]
+
+byteFromBitsBE :: [Bit] -> Word8
+byteFromBitsBE bs = sum $ zipWith f [0..7] (reverse bs) where
+  f i One  = shiftL 1 i
+  f _ Zero = 0
+
+----------------------------------------
 
 word32ToBitsBE :: Word32 -> [Bit]
 word32ToBitsBE = reverse . word32ToBitsLE
