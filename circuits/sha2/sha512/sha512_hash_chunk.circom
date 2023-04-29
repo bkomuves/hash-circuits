@@ -1,6 +1,6 @@
 pragma circom 2.0.0;
 
-include "sha512_common.circom";
+include "../sha2_common.circom";
 include "sha512_schedule.circom";
 include "sha512_rounds.circom";
 include "sha512_initial_value.circom";
@@ -15,16 +15,9 @@ template Sha512_hash_chunk() {
   signal output out_hash[8][64];        // 512 bits, as 8 little-endian 64-bit words
   signal output out_bits[512];          // 512 flat bits
 
-  component iv = Sha512_initial_value();
-
-  component sch = Sha512_schedule();
-  component rds = Sha512_rounds_bits(80); 
-
-  for(var k=0; k<8; k++) {
-    for(var i=0; i<64; i++) {
-      rds.hash_bits[ k*64 + i ] <== iv.out[k][i];
-    }
-  }
+  component iv  = Sha512_initial_value();
+  component sch = SHA2_384_512_schedule();
+  component rds = SHA2_384_512_rounds(80); 
 
   for(var k=0; k<16; k++) {
     for(var i=0; i<64; i++) {
@@ -32,8 +25,9 @@ template Sha512_hash_chunk() {
     }
   }
 
-  sch.out_words     ==> rds.words;
-  rds.out_hash_bits ==> out_hash;
+  iv.out         ==> rds.inp_hash;
+  sch.out_words  ==> rds.words;
+  rds.out_hash   ==> out_hash;
 
   for(var k=0; k<8; k++) {
     for(var i=0; i<64; i++) {

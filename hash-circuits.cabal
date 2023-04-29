@@ -19,12 +19,15 @@ Build-Type:           Simple
 
 --------------------------------------------------------------------------------
 
-Data-Files:           circuits/sha256/*.circom
+Data-Files:           circuits/sha2/*.circom
+                      circuits/sha2/sha256/*.circom
+                      circuits/sha2/sha512/*.circom
                       circuits/keccak/*.circom
                       circuits/poseidon2/*.circom
 
 extra-doc-files:      README.md
-                      circuits/sha256/README.md
+                      circuits/sha2/sha256/README.md
+                      circuits/sha2/sha512/README.md
                       circuits/keccak/README.md
                       circuits/poseidon2/README.md
                       src/README.md

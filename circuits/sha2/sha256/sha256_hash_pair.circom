@@ -22,23 +22,17 @@ template Sha256_hash_field_pair() {
   bits0.inp <== pair[0];
   bits1.inp <== pair[1];
 
-  var initial_state[8] =  
-        [ 0x6a09e667
-        , 0xbb67ae85
-        , 0x3c6ef372
-        , 0xa54ff53a
-        , 0x510e527f
-        , 0x9b05688c
-        , 0x1f83d9ab
-        , 0x5be0cd19
-        ];
+  component iv  = Sha256_initial_value();
+  component sch = SHA2_224_256_schedule();
+  component rds = SHA2_224_256_rounds(64); 
 
-  component sch = Sha256_schedule_bits();
-  component rds = Sha256_rounds_bits(64); 
+  iv.out         ==> rds.inp_hash;
+  sch.out_words  ==> rds.words;
+  rds.out_hash   ==> out_hash;
 
   for(var i=0; i<256; i++) {
-    sch.chunk_bits[i    ] <== bits0.out[i];
-    sch.chunk_bits[i+256] <== bits1.out[i];
+    sch.chunk_bits[(i\32)  ][i%32] <== bits0.out[i];
+    sch.chunk_bits[(i\32)+8][i%32] <== bits1.out[i];
   }
 
   sch.out_words ==> rds.words;

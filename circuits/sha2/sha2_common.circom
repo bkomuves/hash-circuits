@@ -31,6 +31,9 @@ template XOR3_v1() {
   bs.lo ==> out;
 }
 
+//------------------
+// same number of constraints, but circom can optimize z=0, unlike with the above
+
 template XOR3_v2() {
   signal input  x;
   signal input  y;
@@ -40,26 +43,6 @@ template XOR3_v2() {
   signal tmp <== y*z;
   out <== x * (1 - 2*y - 2*z + 4*tmp) + y + z - 2*tmp;
 }
-
-/*
-template XOR23_v2( triple_flag ) {
-  signal input  x;
-  signal input  y;
-  signal input  z;
-  signal output out;
-
-  signal tmp;
-
-  if (triple_flag) {
-    tmp <== y*z;
-    out <== x * (1 - 2*y - 2*z + 4*tmp) + y + z - 2*tmp;
-  }
-  else {
-    // we assume z=0
-    out <== x + y - 2*x*y;
-  }
-}
-*/
 
 //------------------------------------------------------------------------------
 // decompose an n-bit number into bits
@@ -76,6 +59,81 @@ template ToBits(n) {
   }
 
   inp === sum;
+}
+
+//------------------------------------------------------------------------------
+// decompose a 33-bit number into the low 32 bits and the remaining 1 bit
+
+template Bits33() {
+  signal input  inp;
+  signal output out_bits[32];
+  signal output out_word;
+  signal u;
+
+  var sum = 0;
+  for(var i=0; i<32; i++) {
+    out_bits[i] <-- (inp >> i) & 1;
+    out_bits[i] * (1-out_bits[i]) === 0;
+    sum += (1<<i) * out_bits[i];
+  }
+
+  u <-- (inp >> 32) & 1;
+  u*(1-u) === 0;
+
+  inp === sum + (1<<32)*u;
+  out_word <== sum;
+}
+
+//------------------------------------------------------------------------------
+// decompose a 34-bit number into the low 32 bits and the remaining 2 bits
+
+template Bits34() {
+  signal input  inp;
+  signal output out_bits[32];
+  signal output out_word;
+  signal u,v;
+
+  var sum = 0;
+  for(var i=0; i<32; i++) {
+    out_bits[i] <-- (inp >> i) & 1;
+    out_bits[i] * (1-out_bits[i]) === 0;
+    sum += (1<<i) * out_bits[i];
+  }
+
+  u <-- (inp >> 32) & 1;
+  v <-- (inp >> 33) & 1;
+  u*(1-u) === 0;
+  v*(1-v) === 0;
+
+  inp === sum + (1<<32)*u + (1<<33)*v;
+  out_word <== sum;
+}
+
+//------------------------------------------------------------------------------
+// decompose a 35-bit number into the low 32 bits and the remaining 3 bits
+
+template Bits35() {
+  signal input  inp;
+  signal output out_bits[32];
+  signal output out_word;
+  signal u,v,w;
+
+  var sum = 0;
+  for(var i=0; i<32; i++) {
+    out_bits[i] <-- (inp >> i) & 1;
+    out_bits[i] * (1-out_bits[i]) === 0;
+    sum += (1<<i) * out_bits[i];
+  }
+
+  u <-- (inp >> 32) & 1;
+  v <-- (inp >> 33) & 1;
+  w <-- (inp >> 34) & 1;
+  u*(1-u) === 0;
+  v*(1-v) === 0;
+  w*(1-w) === 0;
+
+  inp === sum + (1<<32)*u + (1<<33)*v + (1<<34)*w;
+  out_word <== sum;
 }
 
 //------------------------------------------------------------------------------
@@ -152,6 +210,28 @@ template Bits67() {
 
   inp === sum + (1<<64)*u + (1<<65)*v + (1<<66)*w;
   out_word <== sum;
+}
+
+//------------------------------------------------------------------------------
+// converts a sequence of `n` big-endian 32-bit words to `4n` bytes
+// (to be compatible with the output hex string of standard SHA2 tools)
+
+template DWordsToByteString(n) { 
+  
+  signal input  inp[n][32];
+  signal output out[4*n];
+
+  for(var k=0; k<n; k++) {
+    for(var j=0; j<4; j++) {
+
+      var sum = 0;
+      for(var i=0; i<8; i++) {
+        sum += inp[k][j*8+i] * (1<<i);
+      }
+
+      out[k*4 + (3-j)] <== sum;
+    }
+  }
 }
 
 //------------------------------------------------------------------------------

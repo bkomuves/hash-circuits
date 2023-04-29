@@ -12,7 +12,7 @@ function SHA2_384_512_compute_number_of_chunks(len_bits) {
 // padding for SHA2-384 and SHA2-512 (they are the same)
 // NOTE: `len` should be given as the number of *bits* 
 
-template SHA2_384_512_Padding(len) {
+template SHA2_384_512_padding(len) {
 
   var nchunks = SHA2_384_512_compute_number_of_chunks(len);
   var nbits   = nchunks * 1024;

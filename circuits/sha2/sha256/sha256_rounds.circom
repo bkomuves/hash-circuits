@@ -1,30 +1,33 @@
 pragma circom 2.0.0;
   
-include "sha512_common.circom";
-include "sha512_compress.circom";
-include "sha512_round_const.circom";
+include "../sha2_common.circom";
+include "sha256_compress.circom";
+include "sha256_round_const.circom";
 
 //------------------------------------------------------------------------------
-// execute `n` rounds of the SHA256 inner loop
-// NOTE: hash state is stored as 8 qwords, each little-endian
+// execute `n` rounds of the SHA224 / SHA256 inner loop
+// NOTE: hash state is stored as 8 dwords, each little-endian
 
-template Sha512_rounds_bits(n) {
+template SHA2_224_256_rounds(n) {
  
-  signal input  words[n];            // round words (64-bit words)
-  signal input  inp_hash[8][64];     // initial state
-  signal output out_hash[8][64];     // final state after n rounds (n <= 64)
+  assert( n >  0  );
+  assert( n <= 64 );
 
-  signal  a [n+1][64];
-  signal  b [n+1][64];
-  signal  c [n+1][64];
+  signal input  words[n];            // round words (32-bit words)
+  signal input  inp_hash[8][32];     // initial state
+  signal output out_hash[8][32];     // final state after n rounds (n <= 64)
+
+  signal  a [n+1][32];
+  signal  b [n+1][32];
+  signal  c [n+1][32];
   signal  dd[n+1];
-  signal  e [n+1][64];
-  signal  f [n+1][64];
-  signal  g [n+1][64];
+  signal  e [n+1][32];
+  signal  f [n+1][32];
+  signal  g [n+1][32];
   signal  hh[n+1];
 
-  signal round_keys[80];
-  component RC = SHA2_384_512_round_keys();
+  signal round_keys[64];
+  component RC = SHA2_224_256_round_keys();
   round_keys <== RC.out;
 
   a[0] <== inp_hash[0];
@@ -37,7 +40,7 @@ template Sha512_rounds_bits(n) {
   
   var sum_dd = 0;
   var sum_hh = 0;
-  for(var i=0; i<64; i++) {
+  for(var i=0; i<32; i++) {
     sum_dd  +=  inp_hash[3][i] * (1<<i);  
     sum_hh  +=  inp_hash[7][i] * (1<<i);  
   }
@@ -47,7 +50,7 @@ template Sha512_rounds_bits(n) {
   signal hash_words[8];
   for(var j=0; j<8; j++) {
     var sum = 0;
-    for(var i=0; i<64; i++) {
+    for(var i=0; i<32; i++) {
       sum += (1<<i) * inp_hash[j][i];
     }
     hash_words[j] <== sum;
@@ -57,7 +60,7 @@ template Sha512_rounds_bits(n) {
 
   for(var k=0; k<n; k++) {
 
-    compress[k] = Sha512_compress_inner();
+    compress[k] = SHA2_224_256_compress_inner();
 
     compress[k].inp <== words[k];
     compress[k].key <== round_keys[k];
@@ -83,7 +86,7 @@ template Sha512_rounds_bits(n) {
 
   component modulo[8];
   for(var j=0; j<8; j++) {
-    modulo[j] = Bits65();
+    modulo[j] = Bits33();
   }
 
   var sum_a = 0;
@@ -92,7 +95,7 @@ template Sha512_rounds_bits(n) {
   var sum_e = 0;
   var sum_f = 0;
   var sum_g = 0;
-  for(var i=0; i<64; i++) {
+  for(var i=0; i<32; i++) {
     sum_a += (1<<i) * a[n][i];
     sum_b += (1<<i) * b[n][i];
     sum_c += (1<<i) * c[n][i];
@@ -111,9 +114,7 @@ template Sha512_rounds_bits(n) {
   modulo[7].inp <== hash_words[7] + hh[n];
 
   for(var j=0; j<8; j++) {
-    for(var i=0; i<64; i++) {
-      modulo[j].out_bits[i] ==> out_hash[j][i];
-    }
+    modulo[j].out_bits ==> out_hash[j];
   }
 
 }

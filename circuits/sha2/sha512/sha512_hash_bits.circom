@@ -1,6 +1,6 @@
 pragma circom 2.0.0;
 
-include "sha512_common.circom";
+include "../sha2_common.circom";
 include "sha512_padding.circom";
 include "sha512_initial_value.circom";
 include "sha512_schedule.circom";
@@ -21,7 +21,7 @@ template Sha512_hash_bits(len) {
   signal chunks[nchunks  ][1024];
   signal states[nchunks+1][8][64];
 
-  component pad = SHA2_384_512_Padding(len);
+  component pad = SHA2_384_512_padding(len);
   pad.inp <== inp_bits;
   pad.out ==> chunks;
 
@@ -33,8 +33,8 @@ template Sha512_hash_bits(len) {
 
   for(var m=0; m<nchunks; m++) { 
 
-    sch[m] = Sha512_schedule();
-    rds[m] = Sha512_rounds_bits(80); 
+    sch[m] = SHA2_384_512_schedule();
+    rds[m] = SHA2_384_512_rounds(80); 
 
     for(var k=0; k<16; k++) {
       for(var i=0; i<64; i++) {
