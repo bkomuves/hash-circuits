@@ -59,7 +59,7 @@ sha2_384_vectors =
   , "a"         ~> "54a59b9f22b0b80880d8427e548b7c23abd873486e1f035dce9cd697e85175033caa88e6d57bc35efae0b5afd3145f31"
   , "foo"       ~> "98c11ffdfdd540676b1a137cb1a22b2a70350c9a44171d6b1180c6be5cbb2ee3f79d532c8a1dd9ef2e8e08e752a3babb"
   , "alma"      ~> "24c45c20efc2795d1737ecfd41f832a0215d2bea3bb86a3c57a27a7e4f1bcaba7cde5dc2ab8c3bea48690af5197c213b"
-  , "almakorte" ~> "52ff3db08d878846ef3af064b13e5ba743e29ee72d0560a024bb45a72d5b866ab28df8ea03dfc3966d5a86c5171a0997"
+  , "almakorte" ~> "6e7353b52f8ec0d8e3182925b3199a39e6f8c866a1a80768c12d1043194c6e7812473e2bda30ab5aaa6be9c16aae6d9e"
   ]
 
 sha2_512_vectors :: [(String,String)]

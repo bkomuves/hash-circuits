@@ -20,7 +20,9 @@ Build-Type:           Simple
 --------------------------------------------------------------------------------
 
 Data-Files:           circuits/sha2/*.circom
+                      circuits/sha2/sha224/*.circom
                       circuits/sha2/sha256/*.circom
+                      circuits/sha2/sha384/*.circom
                       circuits/sha2/sha512/*.circom
                       circuits/keccak/*.circom
                       circuits/poseidon2/*.circom

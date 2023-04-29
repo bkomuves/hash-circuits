@@ -9,6 +9,15 @@ import Vectors.SHA2
 
 --------------------------------------------------------------------------------
 
+sha224_test :: SimpleHashTest
+sha224_test = SimpleHashTest
+  { __circomFile     = "circuits/sha2/sha224/sha224_hash_bytes.circom"
+  , __templateName   = "Sha224_hash_bytes_digest"
+  , __inputSignal    = "inp_bytes"
+  , __outputSignal   = "hash_bytes"
+  , __testCases      = sha2_224_vectors
+  }
+
 sha256_test :: SimpleHashTest
 sha256_test = SimpleHashTest
   { __circomFile     = "circuits/sha2/sha256/sha256_hash_bytes.circom"
@@ -16,6 +25,15 @@ sha256_test = SimpleHashTest
   , __inputSignal    = "inp_bytes"
   , __outputSignal   = "hash_bytes"
   , __testCases      = sha2_256_vectors
+  }
+
+sha384_test :: SimpleHashTest
+sha384_test = SimpleHashTest
+  { __circomFile     = "circuits/sha2/sha384/sha384_hash_bytes.circom"
+  , __templateName   = "Sha384_hash_bytes_digest"
+  , __inputSignal    = "inp_bytes"
+  , __outputSignal   = "hash_bytes"
+  , __testCases      = sha2_384_vectors
   }
 
 sha512_test :: SimpleHashTest
@@ -34,5 +52,7 @@ runTests_SHA2 verbosity rootDir = do
 
   putStrLn "running test for SHA2..."
 
+  runSimpleTest verbosity rootDir sha224_test
   runSimpleTest verbosity rootDir sha256_test
+  runSimpleTest verbosity rootDir sha384_test
   runSimpleTest verbosity rootDir sha512_test

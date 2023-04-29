@@ -1,8 +1,6 @@
 pragma circom 2.0.0;
 
 include "../sha2_common.circom";
-include "sha256_schedule.circom";
-include "sha256_rounds.circom";
 include "sha256_hash_bits.circom";
 
 //------------------------------------------------------------------------------
