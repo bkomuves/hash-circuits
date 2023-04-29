@@ -1,22 +1,6 @@
 pragma circom 2.0.0;
 
 //------------------------------------------------------------------------------
-// index rotation function for [0..63] bit indices
-//
-// note: we lookup the "rotated index" in the original bit vectors, 
-// so the direction is reversed!
-
-// index lookup for left rotation
-function rotIdxL(i,by) {
-  return  (i >= by) ? (i - by) : (i - by + 64);
-}
-
-// index lookup for right rotation
-function rotIdxR(i,by) {
-  return  (i + by < 64) ? (i + by) : (i + by - 64);
-}
-
-//------------------------------------------------------------------------------
 // decompose a 2-bit number into a high and a low bit
 
 template Bits2() {
@@ -57,6 +41,7 @@ template XOR3_v2() {
   out <== x * (1 - 2*y - 2*z + 4*tmp) + y + z - 2*tmp;
 }
 
+/*
 template XOR23_v2( triple_flag ) {
   signal input  x;
   signal input  y;
@@ -74,6 +59,7 @@ template XOR23_v2( triple_flag ) {
     out <== x + y - 2*x*y;
   }
 }
+*/
 
 //------------------------------------------------------------------------------
 // decompose an n-bit number into bits
@@ -97,15 +83,15 @@ template ToBits(n) {
 
 template Bits65() {
   signal input  inp;
-  signal output out[64];
+  signal output out_bits[64];
   signal output out_word;
   signal u;
 
   var sum = 0;
   for(var i=0; i<64; i++) {
-    out[i] <-- (inp >> i) & 1;
-    out[i] * (1-out[i]) === 0;
-    sum += (1<<i) * out[i];
+    out_bits[i] <-- (inp >> i) & 1;
+    out_bits[i] * (1-out_bits[i]) === 0;
+    sum += (1<<i) * out_bits[i];
   }
 
   u <-- (inp >> 64) & 1;
@@ -120,15 +106,15 @@ template Bits65() {
 
 template Bits66() {
   signal input  inp;
-  signal output out[64];
+  signal output out_bits[64];
   signal output out_word;
   signal u,v;
 
   var sum = 0;
   for(var i=0; i<64; i++) {
-    out[i] <-- (inp >> i) & 1;
-    out[i] * (1-out[i]) === 0;
-    sum += (1<<i) * out[i];
+    out_bits[i] <-- (inp >> i) & 1;
+    out_bits[i] * (1-out_bits[i]) === 0;
+    sum += (1<<i) * out_bits[i];
   }
 
   u <-- (inp >> 64) & 1;
@@ -146,15 +132,15 @@ template Bits66() {
 
 template Bits67() {
   signal input  inp;
-  signal output out[64];
+  signal output out_bits[64];
   signal output out_word;
   signal u,v,w;
 
   var sum = 0;
   for(var i=0; i<64; i++) {
-    out[i] <-- (inp >> i) & 1;
-    out[i] * (1-out[i]) === 0;
-    sum += (1<<i) * out[i];
+    out_bits[i] <-- (inp >> i) & 1;
+    out_bits[i] * (1-out_bits[i]) === 0;
+    sum += (1<<i) * out_bits[i];
   }
 
   u <-- (inp >> 64) & 1;
@@ -166,6 +152,28 @@ template Bits67() {
 
   inp === sum + (1<<64)*u + (1<<65)*v + (1<<66)*w;
   out_word <== sum;
+}
+
+//------------------------------------------------------------------------------
+// converts a sequence of `n` big-endian 64-bit words to `8n` bytes
+// (to be compatible with the output hex string of standard SHA2 tools)
+
+template QWordsToByteString(n) { 
+  
+  signal input  inp[n][64];
+  signal output out[8*n];
+
+  for(var k=0; k<n; k++) {
+    for(var j=0; j<8; j++) {
+
+      var sum = 0;
+      for(var i=0; i<8; i++) {
+        sum += inp[k][j*8+i] * (1<<i);
+      }
+
+      out[k*8 + (7-j)] <== sum;
+    }
+  }
 }
 
 //------------------------------------------------------------------------------

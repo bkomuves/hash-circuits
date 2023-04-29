@@ -67,35 +67,29 @@ template Sha512_compress_inner() {
     mj_sum += (1<<i) * major[i].hi;
 
     s0xor[i] = XOR3_v1();
-    s0xor[i].x <== a[ rotIdxR(i,28) ];
-    s0xor[i].y <== a[ rotIdxR(i,34) ];
-    s0xor[i].z <== a[ rotIdxR(i,39) ];
+    s0xor[i].x <== a[ (i + 28) % 64 ];
+    s0xor[i].y <== a[ (i + 34) % 64 ];
+    s0xor[i].z <== a[ (i + 39) % 64 ];
     s0_sum += (1<<i) * s0xor[i].out;
 
     s1xor[i] = XOR3_v1();
-    s1xor[i].x <== e[ rotIdxR(i,14) ]; 
-    s1xor[i].y <== e[ rotIdxR(i,18) ];
-    s1xor[i].z <== e[ rotIdxR(i,41) ];
+    s1xor[i].x <== e[ (i + 14) % 64 ]; 
+    s1xor[i].y <== e[ (i + 18) % 64 ];
+    s1xor[i].z <== e[ (i + 41) % 64 ];
     s1_sum += (1<<i) * s1xor[i].out;
 
   }
-
-  // // === debugging only ===
-  // signal output s0 <== s0_sum;
-  // signal output s1 <== s1_sum;
-  // signal output mj <== mj_sum;
-  // signal output ch <== ch_sum;
 
   signal overflow_e <== dd + hh + s1_sum + ch_sum + key + inp;
   signal overflow_a <==      hh + s1_sum + ch_sum + key + inp + s0_sum + mj_sum;
 
   component decompose_e = Bits67();
-  decompose_e.inp <== overflow_e;
-  decompose_e.out ==> out_e;
+  decompose_e.inp      <== overflow_e;
+  decompose_e.out_bits ==> out_e;
 
   component decompose_a = Bits67();
-  decompose_a.inp <== overflow_a;
-  decompose_a.out ==> out_a;
+  decompose_a.inp      <== overflow_a;
+  decompose_a.out_bits ==> out_a;
 
 }
 
