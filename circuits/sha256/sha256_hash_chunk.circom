@@ -1,8 +1,8 @@
 pragma circom 2.0.0;
 
-include "sha_common.circom";
-include "sha_schedule_bits.circom";
-include "sha_rounds_bits.circom";
+include "sha256_common.circom";
+include "sha256_schedule_bits.circom";
+include "sha256_rounds_bits.circom";
 
 //------------------------------------------------------------------------------
 // hashes 512 bits into 256 bits, without applying any padding

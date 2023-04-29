@@ -1,15 +1,16 @@
 pragma circom 2.0.0;
   
-include "sha_common.circom";
-include "sha_compress.circom";
+include "sha256_common.circom";
+include "sha256_compress.circom";
 
 //------------------------------------------------------------------------------
+// NOTE: hash_bits are little-endian!
 
-template Sha256_rounds_words(n) {
-
-  signal input  words[n];          // round words
-  signal input  hash[8];           // initial state
-  signal output out_hash[8];       // final state after n rounds (n <= 64)
+template Sha256_rounds_bits(n) {
+ 
+  signal input  words[n];               // round words
+  signal input  hash_bits[256];         // initial state
+  signal output out_hash_bits[256];     // final state after n rounds (n <= 64)
 
   signal  a[32][n+1];
   signal  b[32][n+1];
@@ -31,31 +32,28 @@ template Sha256_rounds_words(n) {
      , 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
      ];
 
-  component tobits_a = ToBits(32);
-  component tobits_b = ToBits(32);
-  component tobits_c = ToBits(32);
-
-  component tobits_e = ToBits(32);
-  component tobits_f = ToBits(32);
-  component tobits_g = ToBits(32);
-
-  tobits_a.inp <== hash[0];
-  tobits_b.inp <== hash[1];
-  tobits_c.inp <== hash[2];
-  dd[0]        <== hash[3];
-  tobits_e.inp <== hash[4];
-  tobits_f.inp <== hash[5];
-  tobits_g.inp <== hash[6];
-  hh[0]        <== hash[7];
-
+  var sum_dd = 0;
+  var sum_hh = 0;
   for(var i=0; i<32; i++) {
-    tobits_a.out[i] ==> a[i][0];
-    tobits_b.out[i] ==> b[i][0];
-    tobits_c.out[i] ==> c[i][0];
-  
-    tobits_e.out[i] ==> e[i][0];
-    tobits_f.out[i] ==> f[i][0];
-    tobits_g.out[i] ==> g[i][0];
+    a[i][0] <== hash_bits [ 0*32 + i ];
+    b[i][0] <== hash_bits [ 1*32 + i ];
+    c[i][0] <== hash_bits [ 2*32 + i ];
+    sum_dd  +=  hash_bits [ 3*32 + i ] * (1<<i);  
+    e[i][0] <== hash_bits [ 4*32 + i ];
+    f[i][0] <== hash_bits [ 5*32 + i ];
+    g[i][0] <== hash_bits [ 6*32 + i ];
+    sum_hh  +=  hash_bits [ 7*32 + i ] * (1<<i);  
+  }
+  dd[0] <== sum_dd;
+  hh[0] <== sum_hh;
+
+  signal hash_words[8];
+  for(var j=0; j<8; j++) {
+    var sum = 0;
+    for(var i=0; i<32; i++) {
+      sum += (1<<i) * hash_bits[ j*32 + i ];
+    }
+    hash_words[j] <== sum;
   }
 
   component compress[n];  
@@ -114,17 +112,19 @@ template Sha256_rounds_words(n) {
     sum_g += (1<<i) * g[i][n];
   }
   
-  modulo[0].inp <== hash[0] + sum_a;
-  modulo[1].inp <== hash[1] + sum_b;
-  modulo[2].inp <== hash[2] + sum_c;
-  modulo[3].inp <== hash[3] + dd[n];
-  modulo[4].inp <== hash[4] + sum_e;
-  modulo[5].inp <== hash[5] + sum_f;
-  modulo[6].inp <== hash[6] + sum_g;
-  modulo[7].inp <== hash[7] + hh[n];
+  modulo[0].inp <== hash_words[0] + sum_a;
+  modulo[1].inp <== hash_words[1] + sum_b;
+  modulo[2].inp <== hash_words[2] + sum_c;
+  modulo[3].inp <== hash_words[3] + dd[n];
+  modulo[4].inp <== hash_words[4] + sum_e;
+  modulo[5].inp <== hash_words[5] + sum_f;
+  modulo[6].inp <== hash_words[6] + sum_g;
+  modulo[7].inp <== hash_words[7] + hh[n];
 
   for(var j=0; j<8; j++) {
-    modulo[j].out ==> out_hash[j];
+    for(var i=0; i<32; i++) {
+      modulo[j].bit[i] ==> out_hash_bits[j*32+i];
+    }
   }
 
 }

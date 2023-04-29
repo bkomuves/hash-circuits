@@ -1,8 +1,8 @@
 pragma circom 2.0.0;
 
-include "sha_common.circom";
-include "sha_schedule_bits.circom";
-include "sha_rounds_bits.circom";
+include "sha256_common.circom";
+include "sha256_schedule_bits.circom";
+include "sha256_rounds_bits.circom";
 
 //------------------------------------------------------------------------------
 // Hashes a pair of field elements (assumed to be at most 256 bits),

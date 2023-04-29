@@ -1,8 +1,8 @@
 pragma circom 2.0.0;
 
-include "sha_common.circom";
-include "sha_schedule_bits.circom";
-include "sha_rounds_bits.circom";
+include "sha256_common.circom";
+include "sha256_schedule_bits.circom";
+include "sha256_rounds_bits.circom";
 
 //------------------------------------------------------------------------------
 // Computes the SHA256 hash of a sequence of bits

@@ -1,6 +1,6 @@
 pragma circom 2.0.0;
   
-include "sha_common.circom";
+include "sha256_common.circom";
 
 //------------------------------------------------------------------------------
 // sha256 compression function inner loop
