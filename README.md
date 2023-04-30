@@ -52,7 +52,7 @@ Tests and reference implementation
 
 Reference implementations and tests are written in [Haskell](https://www.haskell.org/). 
 The tests are using the [`r1cs-solver`](https://bitbucket.org/faulhorn/r1cs-solver) 
-testing  framework (though we mostly only use to trivial part of that, automating the 
+testing framework (though we mostly only use to trivial part of that, automating the 
 `circom` workflow).
 
 TODO
