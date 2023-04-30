@@ -85,6 +85,15 @@ runSimpleTestBits = runSimpleTest' mkInput where
 
 --------------------------------------------------------------------------------
 
+-- 625 bytes = 5000 bits output hardwired for now
+runShakeTest :: Verbosity -> FilePath -> SimpleHashTest -> IO ()
+runShakeTest = runSimpleTest' mkInput where
+  mkInput :: String -> Either String ([Int], HsInput)
+  mkInput input_str = Right ([length input_bytes, 625], HsInput input_bytes) where
+    input_bytes = map ordAscii input_str :: [Word8]
+
+--------------------------------------------------------------------------------
+
 to_8_bytes_BE :: Integer -> [Word8]
 to_8_bytes_BE n = [ byte (7-i) | i <- [0..7] ] where
   byte :: Int -> Word8

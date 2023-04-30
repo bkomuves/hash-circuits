@@ -13,8 +13,9 @@ What's this about?
 This repository contains [`circom`](https://docs.circom.io/) implementations 
 of some popular hash functions:
 
-- SHA256 (SHA2)
-- Keccak (SHA3)
+- SHA2: SHA224 / SHA256 / SHA384 / SHA512
+- Keccak / SHA3: Keccak-224, Keccak-256, Keccak-384, Keccak-512 + the SHA3 versions
+- SHA3 XOFs: SHAKE128, SHAKE256
 - Poseidon2 (for the bn128 scalar field and t=3)
 
 Circom is a programming language describing arithmetic circuits and/or R1CS 
@@ -35,14 +36,14 @@ Approximate counts of nonlinear R1CS constraints:
     - Poseidon2:      240
 - Compression (two-to-one):
     - SHA256:         26170
-    - Keccak256:      144800
+    - Keccak256:      144830
     - Poseidon2:      240
 - Hashing (per native chunk):
-    - SHA256:         26000 (about 13% less than the one in `circomlib`)
+    - SHA256:         26200 (about 13% less than the one in `circomlib`)
     - Keccak256:      147000
     - Poseidon2:      250
 - Hashing (per byte):
-    - SHA256:         405
+    - SHA256:         410
     - Keccak256:      1100
     - Poseidon2:      8
 
@@ -57,8 +58,8 @@ testing  framework (though we mostly only use to trivial part of that, automatin
 TODO
 ----
 
-- implement more variations of SHA2
 - more detailed tests for the individual components (permutation, compression, etc)
+- more comprehensive testing (using the reference implementations)
 - implement reference Poseidon2 for general parameter settings 
 - implement the original Poseidon
 - test the R1CS equations (if possible in practice)

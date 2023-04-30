@@ -85,6 +85,26 @@ keccak_512_test = SimpleHashTest
 
 --------------------------------------------------------------------------------
 
+shake_128_test :: SimpleHashTest
+shake_128_test = SimpleHashTest
+  { __circomFile     = "circuits/keccak/sha3_bytes.circom"
+  , __templateName   = "SHAKE128_bytes"
+  , __inputSignal    = "inp_bytes"
+  , __outputSignal   = "out_bytes"
+  , __testCases      = shake_128_5000
+  }
+
+shake_256_test :: SimpleHashTest
+shake_256_test = SimpleHashTest
+  { __circomFile     = "circuits/keccak/sha3_bytes.circom"
+  , __templateName   = "SHAKE256_bytes"
+  , __inputSignal    = "inp_bytes"
+  , __outputSignal   = "out_bytes"
+  , __testCases      = shake_256_5000
+  }
+
+--------------------------------------------------------------------------------
+
 runTests_SHA3 :: Verbosity -> FilePath -> IO ()
 runTests_SHA3 verbosity rootDir = do
 
@@ -106,5 +126,15 @@ runTests_Keccak verbosity rootDir = do
   runSimpleTestBytes verbosity rootDir keccak_256_test
   runSimpleTestBytes verbosity rootDir keccak_384_test
   runSimpleTestBytes verbosity rootDir keccak_512_test
+
+--------------------------------------------------------------------------------
+
+runTests_SHAKE :: Verbosity -> FilePath -> IO ()
+runTests_SHAKE verbosity rootDir = do
+
+  putStrLn "running test for SHAKE..."
+
+  runShakeTest verbosity rootDir shake_128_test
+  runShakeTest verbosity rootDir shake_256_test
 
 --------------------------------------------------------------------------------
