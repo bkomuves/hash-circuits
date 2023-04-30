@@ -51,6 +51,7 @@ executable hash-circuit-tests
   main-is:              Main.hs
 
   Other-Modules:        Ref.SHA2.SHA256
+                        Ref.Keccak.Perm
                         Ref.Poseidon2.BN256
                         Ref.Poseidon2.Example
                         Ref.Poseidon2.Permutation
