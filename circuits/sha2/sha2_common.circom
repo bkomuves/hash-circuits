@@ -32,7 +32,9 @@ template XOR3_v1() {
 }
 
 //------------------
-// same number of constraints, but circom can optimize z=0, unlike with the above
+// same number of constraints (that is, 2), in the general case
+// however circom can optimize y=0 or z=0, unlike with the above
+// and hopefully also x=0.
 
 template XOR3_v2() {
   signal input  x;

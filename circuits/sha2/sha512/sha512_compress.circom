@@ -66,13 +66,13 @@ template SHA2_384_512_compress_inner() {
     major[i].xy <== a[i] + b[i] + c[i];
     mj_sum += (1<<i) * major[i].hi;
 
-    s0xor[i] = XOR3_v1();
+    s0xor[i] = XOR3_v2();
     s0xor[i].x <== a[ (i + 28) % 64 ];
     s0xor[i].y <== a[ (i + 34) % 64 ];
     s0xor[i].z <== a[ (i + 39) % 64 ];
     s0_sum += (1<<i) * s0xor[i].out;
 
-    s1xor[i] = XOR3_v1();
+    s1xor[i] = XOR3_v2();
     s1xor[i].x <== e[ (i + 14) % 64 ]; 
     s1xor[i].y <== e[ (i + 18) % 64 ];
     s1xor[i].z <== e[ (i + 41) % 64 ];
