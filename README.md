@@ -16,6 +16,7 @@ of some popular hash functions:
 - SHA2: SHA224 / SHA256 / SHA384 / SHA512
 - Keccak / SHA3: Keccak-224, Keccak-256, Keccak-384, Keccak-512 + the SHA3 versions
 - SHA3 XOFs: SHAKE128, SHAKE256
+- Blake2: BLAKE2s-256 and BLAKE2b-256
 - Poseidon2 (for the bn128 scalar field and t=3)
 
 Circom is a programming language describing arithmetic circuits and/or R1CS 
@@ -40,10 +41,12 @@ Approximate counts of nonlinear R1CS constraints:
     - Poseidon2:      240
 - Hashing (per native chunk):
     - SHA256:         26200 (about 13% less than the one in `circomlib`)
+    - BLAKE2s:        32600
     - Keccak256:      147000
     - Poseidon2:      250
 - Hashing (per byte):
     - SHA256:         410
+    - BLAKE2s:        509
     - Keccak256:      1100
     - Poseidon2:      8
 
@@ -64,5 +67,4 @@ TODO
 - implement the original Poseidon
 - test the R1CS equations (if possible in practice)
 - Haskell reference implementation for Keccak sponge
-- add more Keccak constructions and variants
 - implement other hash functions

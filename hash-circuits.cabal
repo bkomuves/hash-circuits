@@ -3,9 +3,9 @@ Name:                 hash-circuits
 Version:              0.1
 Synopsis:             Hash circuits implemented in circom
 
-Description:          Hash circuits (SHA2, Keccak / SHA3, Poseidon2) implemented 
-                      in circom (R1CS / arithmetic circuit) with tests and 
-                      reference implementations in Haskell.
+Description:          Hash circuits (SHA2, Keccak / SHA3, Blake2, Poseidon2) 
+                      implemented in circom (R1CS / arithmetic circuit) with tests 
+                      and reference implementations in Haskell.
 
 License:              MIT
 License-file:         LICENSE
@@ -25,12 +25,14 @@ Data-Files:           circuits/sha2/*.circom
                       circuits/sha2/sha384/*.circom
                       circuits/sha2/sha512/*.circom
                       circuits/keccak/*.circom
+                      circuits/blake2/*.circom
                       circuits/poseidon2/*.circom
 
 extra-doc-files:      README.md
                       circuits/sha2/sha256/README.md
                       circuits/sha2/sha512/README.md
                       circuits/keccak/README.md
+                      circuits/blake2/README.md
                       circuits/poseidon2/README.md
                       src/README.md
                       src/ref/README.md
@@ -51,6 +53,8 @@ executable hash-circuit-tests
   main-is:              Main.hs
 
   Other-Modules:        Ref.SHA2.SHA256
+                        Ref.Blake2.BLAKE2s
+                        Ref.Blake2.BLAKE2b
                         Ref.Keccak.Perm
                         Ref.Poseidon2.Example
                         Ref.Poseidon2.Merkle
@@ -61,9 +65,11 @@ executable hash-circuit-tests
                         Ref.Poseidon2.State
                         Ref.Common
                         Vectors.SHA2
+                        Vectors.Blake2
                         Vectors.Keccak
                         Test.Hash.SHA2
                         Test.Hash.Keccak
+                        Test.Hash.Blake2
                         Test.Runner
                         Test.Misc
 

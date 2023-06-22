@@ -138,7 +138,7 @@ runChunkTest_SHA256 verbosity rootdir test = runSimpleTest'' checkResult mkInput
   checkResult wtns expected_output_str = do
     let result     = extractBits wtns ("main." ++ __outputSignal test)
         hash_bytes = map byteFromBitsBE $ partition 8 result
-        hash_str   = concatMap toHexString hash_bytes
+        hash_str   = concatMap toHexStringBE hash_bytes
 
     if hash_str == expected_output_str
       then putStrLn "OK."
@@ -163,7 +163,7 @@ runChunkTest_SHA512 verbosity rootdir test = runSimpleTest'' checkResult mkInput
   checkResult wtns expected_output_str = do
     let result     = extractBits wtns ("main." ++ __outputSignal test)
         hash_bytes = map byteFromBitsBE $ partition 8 result
-        hash_str   = concatMap toHexString hash_bytes
+        hash_str   = concatMap toHexStringBE hash_bytes
 
     if hash_str == expected_output_str
       then putStrLn "OK."
@@ -182,7 +182,7 @@ runSimpleTest' mkInput verbosity rootdir test = runSimpleTest'' checkResult mkIn
   checkResult wtns expected_output_str = do
 
     let result   = extractBytes wtns ("main." ++ __outputSignal test)
-    let hash_str = concatMap toHexString result
+    let hash_str = concatMap toHexStringBE result
 
     if hash_str == expected_output_str
       then putStrLn "OK."

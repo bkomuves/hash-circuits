@@ -10,6 +10,7 @@ import R1CS.Misc ( Verbosity(..) )
 
 import qualified Test.Hash.SHA2   as SHA2
 import qualified Test.Hash.Keccak as Keccak
+import qualified Test.Hash.Blake2 as Blake2
 
 --------------------------------------------------------------------------------
 
@@ -27,6 +28,7 @@ help = do
   putStrLn " - keccak      (original Keccak variant)"
   putStrLn " - sha3        (NIST Keccak variant)"
   putStrLn " - shake       (NIST SHA3 XOFs)"
+  putStrLn " - blake2"
   putStrLn " - poseidon2"
   putStrLn ""
 
@@ -46,6 +48,7 @@ main = do
       "keccak"         -> Keccak.runTests_Keccak    verbosity rootDir
       "sha3"           -> Keccak.runTests_SHA3      verbosity rootDir
       "shake"          -> Keccak.runTests_SHAKE     verbosity rootDir
+      "blake2"         -> Blake2.runTests_BLAKE2    verbosity rootDir
       "poseidon2"      -> putStrLn "poseidon2 testsuite not implemented yet"
 
       _ -> do

@@ -1,5 +1,5 @@
 
-{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeApplications, FlexibleInstances, NumericUnderscores #-}
 module Ref.Common where
 
 --------------------------------------------------------------------------------
@@ -8,6 +8,7 @@ import Data.Bits
 import Data.Char
 import Data.List
 import Data.Word
+import Data.Array
 
 import Data.ByteString (ByteString)
 import qualified Data.ByteString       as B
@@ -16,25 +17,44 @@ import qualified Data.ByteString.Char8 as C
 --------------------------------------------------------------------------------
 
 class ToHexString a where
-  toHexString :: a -> String
+  toHexStringBE :: a -> String
+  toHexStringLE :: a -> String
 
 instance ToHexString Word8 where
-  toHexString w = showNibble (shiftR w 4) : showNibble (w .&. 15) : []
+  toHexStringBE w = showNibble (shiftR w 4) : showNibble (w .&. 15) : []
+  toHexStringLE w = showNibble (shiftR w 4) : showNibble (w .&. 15) : []
 
 instance ToHexString Word16 where
-  toHexString w = 
-    (toHexString @Word8 (fromIntegral (shiftR w 8))) ++ 
-    (toHexString @Word8 (fromIntegral (w .&. 0xff)))
+  toHexStringBE w = 
+    (toHexStringBE @Word8 (fromIntegral (shiftR w 8))) ++ 
+    (toHexStringBE @Word8 (fromIntegral (w .&. 0xff)))
+  toHexStringLE w = 
+    (toHexStringLE @Word8 (fromIntegral (w .&. 0xff))) ++
+    (toHexStringLE @Word8 (fromIntegral (shiftR w 8)))  
 
 instance ToHexString Word32 where
-  toHexString w = 
-    (toHexString @Word16 (fromIntegral (shiftR w 16 ))) ++ 
-    (toHexString @Word16 (fromIntegral (w .&. 0xffff)))
+  toHexStringBE w = 
+    (toHexStringBE @Word16 (fromIntegral (shiftR w 16 ))) ++ 
+    (toHexStringBE @Word16 (fromIntegral (w .&. 0xffff)))
+  toHexStringLE w = 
+    (toHexStringLE @Word16 (fromIntegral (w .&. 0xffff))) ++
+    (toHexStringLE @Word16 (fromIntegral (shiftR w 16 ))) 
 
 instance ToHexString Word64 where
-  toHexString w = 
-    (toHexString @Word32 (fromIntegral (shiftR w 32     ))) ++ 
-    (toHexString @Word32 (fromIntegral (w .&. 0xffffffff)))
+  toHexStringBE w = 
+    (toHexStringBE @Word32 (fromIntegral (shiftR w 32 ))) ++ 
+    (toHexStringBE @Word32 (fromIntegral (w .&. 0xffff_ffff)))
+  toHexStringLE w = 
+    (toHexStringLE @Word32 (fromIntegral (w .&. 0xffff_ffff))) ++
+    (toHexStringLE @Word32 (fromIntegral (shiftR w 32 ))) 
+
+instance ToHexString a => ToHexString [a] where
+  toHexStringBE xs = intercalate " " (map toHexStringBE xs)
+  toHexStringLE xs = intercalate " " (map toHexStringLE xs)
+
+instance ToHexString a => ToHexString (Array Int a) where
+  toHexStringBE arr = toHexStringBE (elems arr)
+  toHexStringLE arr = toHexStringLE (elems arr)
 
 showNibble :: Word8 -> Char
 showNibble k

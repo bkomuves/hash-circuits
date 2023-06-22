@@ -43,16 +43,16 @@ newtype Rounds
   = Rounds { fromRound :: [Word32] }
 
 instance Show Chunk where 
-  show (Chunk cs) = intercalate " " (map toHexString cs)
+  show (Chunk cs) = intercalate " " (map toHexStringBE cs)
 
 instance Show State where 
-  show (State ws) = intercalate " " (map toHexString ws)
+  show (State ws) = intercalate " " (map toHexStringBE ws)
 
 instance Show Digest where 
-  show (Digest ws) = intercalate " " (map toHexString ws)
+  show (Digest ws) = intercalate " " (map toHexStringBE ws)
 
 instance Show Rounds where 
-  show (Rounds ws) = intercalate " " (map toHexString ws)
+  show (Rounds ws) = intercalate " " (map toHexStringBE ws)
 
 
 --------------------------------------------------------------------------------
