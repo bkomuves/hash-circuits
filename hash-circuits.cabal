@@ -39,6 +39,12 @@ extra-doc-files:      README.md
 
 --------------------------------------------------------------------------------
 
+source-repository head
+  type:                git 
+  location:            https://github.com/faulhornlabs/hash-circuits
+
+--------------------------------------------------------------------------------
+
 executable hash-circuit-tests
 
   Build-Depends:        base >= 4 && < 5, 
