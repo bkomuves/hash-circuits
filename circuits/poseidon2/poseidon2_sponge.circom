@@ -94,3 +94,29 @@ template PoseidonSponge(t, capacity, input_len, output_len) {
 }
 
 //------------------------------------------------------------------------------
+
+//
+// sponge hash with rate=1
+//
+
+template Poseidon2_sponge_hash_rate_1(n) {
+  signal input  inp[n];
+  signal output out;
+  component sponge = PoseidonSponge(3, 2, n, 1);
+  sponge.inp    <== inp;
+  sponge.out[0] ==> out;
+}
+
+//
+// sponge hash with rate=2
+//
+
+template Poseidon2_sponge_hash_rate_2(n) {
+  signal input  inp[n];
+  signal output out;
+  component sponge = PoseidonSponge(3, 1, n, 1);
+  sponge.inp    <== inp;
+  sponge.out[0] ==> out;
+}
+
+//------------------------------------------------------------------------------

@@ -31,15 +31,15 @@ Circuit sizes
 
 The author believes that the R1CS / arithmetic circuit format allows very limited
 opportunities for optimizing hash function circuits, nevertheless some effort 
-was put into optimization.
+was put into optimization (in particular for SHA256).
 
 Approximate counts of nonlinear R1CS constraints:
 
 - Permutation:
-    - Keccak-f[1600]: 146000  (1600 its)
-    - Poseidon2:      240     (3 field elements)
-    - MiMC:           330     (1 field element)
-    - MiMC-Feistel:   660     (2 field elements)
+    - Keccak-f[1600]: 146000  (1600 bits)
+    - Poseidon2:      240     (3 field elements; approx 760 bits)
+    - MiMC:           330     (1 field element;  approx 254 bits)
+    - MiMC-Feistel:   660     (2 field elements; approx 507 bits)
 - Compression (two-to-one):
     - SHA256:         26170
     - Keccak256:      144830
@@ -69,14 +69,13 @@ The tests are using the [`r1cs-solver`](https://github.com/faulhornlabs/r1cs-sol
 testing framework (though we mostly only use to trivial part of that, automating the 
 `circom` workflow).
 
-We also use the [`zikkurat-algebra`](https://github.com/faulhornlabs/zikkurat-algebra) algebra backend library for finite field
-computations.
+We also use the [`zikkurat-algebra`](https://github.com/faulhornlabs/zikkurat-algebra) 
+algebra backend library for finite field computations.
 
 
 TODO
 ----
 
-- tests for Poseidon2
 - more detailed tests for the individual components (permutation, compression, etc)
 - more comprehensive testing (using the reference implementations)
 - implement reference Poseidon2 for general parameter settings 

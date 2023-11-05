@@ -8,10 +8,11 @@ import System.Environment
 
 import R1CS.Misc ( Verbosity(..) )
 
-import qualified Test.Hash.SHA2   as SHA2
-import qualified Test.Hash.Keccak as Keccak
-import qualified Test.Hash.Blake2 as Blake2
-import qualified Test.Hash.MiMC   as MiMC
+import qualified Test.Hash.SHA2      as SHA2
+import qualified Test.Hash.Keccak    as Keccak
+import qualified Test.Hash.Blake2    as Blake2
+import qualified Test.Hash.MiMC      as MiMC
+import qualified Test.Hash.Poseidon2 as Poseidon2
 
 --------------------------------------------------------------------------------
 
@@ -54,7 +55,7 @@ main = do
       "blake2"         -> Blake2.runTests_BLAKE2        verbosity rootDir
       "mimc"           -> MiMC.runTests_MiMC            verbosity rootDir
       "mimc-comp"      -> MiMC.runTests_MiMC_components verbosity rootDir
-      "poseidon2"      -> putStrLn "poseidon2 testsuite not implemented yet"
+      "poseidon2"      -> Poseidon2.runTests_Poseidon2  verbosity rootDir
 
       _ -> do
         putStrLn $ "unknown testsuite `" ++ what ++ "`"

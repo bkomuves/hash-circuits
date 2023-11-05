@@ -1,12 +1,11 @@
 
 -- | BN256 prime, and t = 3
 
-module Ref.Poseidon2.RoundConsts where
+module Ref.Poseidon2.Naive.RoundConsts where
 
 --------------------------------------------------------------------------------
 
-import Ref.Poseidon2.BN256
-import Ref.Poseidon2.State
+import Ref.Poseidon2.Naive.BN256
 
 --------------------------------------------------------------------------------
 
@@ -24,7 +23,7 @@ matInternal3 =
   , [1,1,3]
   ]
 
-initialRoundConsts :: [Triple BN256]
+initialRoundConsts :: [(BN256,BN256,BN256)]
 initialRoundConsts =
   [ ( 0x2c4c51fd1bb9567c27e99f5712b49e0574178b41b6f0a476cddc41d242cf2b43
     , 0x1c5f8d18acb9c61ec6fcbfcda5356f1b3fdee7dc22c99a5b73a2750e5b054104
@@ -104,7 +103,7 @@ internalRoundConsts =
   , 0x238d26ca97c691591e929f32199a643550f325f23a85d420080b289d7cecc9d4
   ]
 
-finalRoundConsts :: [Triple BN256]
+finalRoundConsts :: [(BN256,BN256,BN256)]
 finalRoundConsts =
   [ ( 0x25672a14b5d085e31a30a7e1d5675ebfab034fb04dc2ec5e544887523f98dede
     , 0x0cf702434b891e1b2f1d71883506d68cdb1be36fa125674a3019647b3a98accd

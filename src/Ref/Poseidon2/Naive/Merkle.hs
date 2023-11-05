@@ -1,12 +1,12 @@
 
 -- | Merkle tree built from Poseidon2 permutation
 
-module Ref.Poseidon2.Merkle where
+module Ref.Poseidon2.Naive.Merkle where
 
 --------------------------------------------------------------------------------
 
-import Ref.Poseidon2.Permutation
-import Ref.Poseidon2.BN256
+import Ref.Poseidon2.Naive.Permutation
+import Ref.Poseidon2.Naive.BN256
 
 --------------------------------------------------------------------------------
 

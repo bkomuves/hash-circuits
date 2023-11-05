@@ -6,7 +6,7 @@
 
 {-# OPTIONS_HADDOCK hide #-} 
 {-# LANGUAGE BangPatterns, DataKinds, KindSignatures #-}
-module Ref.Poseidon2.PrimeField where
+module Ref.Poseidon2.Naive.PrimeField where
 
 --------------------------------------------------------------------------------
 

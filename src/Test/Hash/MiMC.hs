@@ -8,7 +8,7 @@ import Test.Runner
 import Ref.MiMC.MiMC
 
 --------------------------------------------------------------------------------
--- * tests for the version where the input is a sequence of bytes
+-- * tests for the hashes where the input is a sequence of field elements
 
 mimc_merkle_damgard_hash_test :: ArithHashTest
 mimc_merkle_damgard_hash_test = MkGenericHashTest

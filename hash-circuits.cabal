@@ -65,13 +65,17 @@ executable hash-circuit-tests
                         Ref.Blake2.BLAKE2s
                         Ref.Blake2.BLAKE2b
                         Ref.Keccak.Perm
-                        Ref.Poseidon2.Example
-                        Ref.Poseidon2.Merkle
-                        Ref.Poseidon2.Permutation
-                        Ref.Poseidon2.BN256
-                        Ref.Poseidon2.PrimeField
-                        Ref.Poseidon2.RoundConsts
-                        Ref.Poseidon2.State
+                        Ref.Poseidon2.Naive.Example
+                        Ref.Poseidon2.Naive.Merkle
+                        Ref.Poseidon2.Naive.Permutation
+                        Ref.Poseidon2.Naive.BN256
+                        Ref.Poseidon2.Naive.PrimeField
+                        Ref.Poseidon2.Naive.RoundConsts
+                        Ref.Poseidon2.Zikkurat.Sponge
+                        Ref.Poseidon2.Zikkurat.Merkle
+                        Ref.Poseidon2.Zikkurat.Permutation
+                        Ref.Poseidon2.Zikkurat.InvPerm
+                        Ref.Poseidon2.Zikkurat.RoundConsts
                         Ref.MiMC.MiMC
                         Ref.MiMC.RoundConst
                         Ref.Common
@@ -82,6 +86,7 @@ executable hash-circuit-tests
                         Test.Hash.Keccak
                         Test.Hash.Blake2
                         Test.Hash.MiMC
+                        Test.Hash.Poseidon2
                         Test.Runner
                         Test.Misc
 

@@ -1,11 +1,10 @@
 
-module Ref.Poseidon2.Example where
+module Ref.Poseidon2.Naive.Example where
 
 --------------------------------------------------------------------------------
 
-import Ref.Poseidon2.Permutation
-import Ref.Poseidon2.State
-import Ref.Poseidon2.BN256
+import Ref.Poseidon2.Naive.Permutation
+import Ref.Poseidon2.Naive.BN256
 
 --------------------------------------------------------------------------------
 

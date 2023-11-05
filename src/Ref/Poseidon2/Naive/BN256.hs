@@ -1,7 +1,7 @@
 
 -- | The bn256 (aka bn128 aka BN254) scalar field
 
-module Ref.Poseidon2.BN256 where
+module Ref.Poseidon2.Naive.BN256 where
 
 --------------------------------------------------------------------------------
 
@@ -9,7 +9,7 @@ import Data.Bits
 import Data.Word
 import Data.Ratio
 
-import qualified Ref.Poseidon2.PrimeField as Gen
+import qualified Ref.Poseidon2.Naive.PrimeField as Gen
 
 --------------------------------------------------------------------------------
 
