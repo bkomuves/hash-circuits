@@ -27,6 +27,7 @@ Data-Files:           circuits/sha2/*.circom
                       circuits/keccak/*.circom
                       circuits/blake2/*.circom
                       circuits/poseidon2/*.circom
+                      circuits/mimc/*.circom
 
 extra-doc-files:      README.md
                       circuits/sha2/sha256/README.md
@@ -34,6 +35,7 @@ extra-doc-files:      README.md
                       circuits/keccak/README.md
                       circuits/blake2/README.md
                       circuits/poseidon2/README.md
+                      circuits/mimc/README.md
                       src/README.md
                       src/ref/README.md
 
@@ -52,7 +54,8 @@ executable hash-circuit-tests
                         containers >= 0.6, 
                         filepath >= 1.2,
                         bytestring >= 0.10,
-                        r1cs-solver == 0.1
+                        r1cs-solver == 0.1,
+                        zikkurat-algebra
 
   Hs-Source-Dirs:       src
                                  
@@ -69,6 +72,8 @@ executable hash-circuit-tests
                         Ref.Poseidon2.PrimeField
                         Ref.Poseidon2.RoundConsts
                         Ref.Poseidon2.State
+                        Ref.MiMC.MiMC
+                        Ref.MiMC.RoundConst
                         Ref.Common
                         Vectors.SHA2
                         Vectors.Blake2
@@ -76,6 +81,7 @@ executable hash-circuit-tests
                         Test.Hash.SHA2
                         Test.Hash.Keccak
                         Test.Hash.Blake2
+                        Test.Hash.MiMC
                         Test.Runner
                         Test.Misc
 

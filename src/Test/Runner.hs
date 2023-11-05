@@ -1,4 +1,5 @@
 
+{-# LANGUAGE PatternSynonyms, RecordWildCards #-}
 module Test.Runner where
 
 --------------------------------------------------------------------------------
@@ -59,12 +60,20 @@ loadWitness_ verbosity circuitfiles witnessfiles = do
 -- | We assume that the circuit takes a sequence of bytes as input and
 -- and also produces a sequence of bytes as output. The template parameter
 -- is assumed to be the length of the input.
-data SimpleHashTest = SimpleHashTest
+type SimpleHashTest = GenericHashTest Char String
+
+-- | Tests for arithmetic hashes, taking a sequence of field elements and
+-- returning a single field element
+type ArithHashTest = GenericHashTest Integer Integer
+
+-- | Tests for generic hashes, taking an input of type @[a]@ and producing an
+-- output of type @b@
+data GenericHashTest a b = MkGenericHashTest
   { __circomFile     :: FilePath
   , __templateName   :: String
   , __inputSignal    :: String
   , __outputSignal   :: String
-  , __testCases      :: [(String,String)]
+  , __testCases      :: [([a],b)]
   }
   deriving Show
 
@@ -93,6 +102,7 @@ runShakeTest = runSimpleTest' mkInput where
     input_bytes = map ordAscii input_str :: [Word8]
 
 --------------------------------------------------------------------------------
+-- * SHA2 specific stuff
 
 to_8_bytes_BE :: Integer -> [Word8]
 to_8_bytes_BE n = [ byte (7-i) | i <- [0..7] ] where
@@ -123,7 +133,7 @@ padBytes_SHA512 bs = bs ++ padding where
 ----------------------------------------
 
 runChunkTest_SHA256 :: Verbosity -> FilePath -> SimpleHashTest -> IO ()
-runChunkTest_SHA256 verbosity rootdir test = runSimpleTest'' checkResult mkInput verbosity rootdir test where
+runChunkTest_SHA256 verbosity rootdir test = runGenericTest checkResult mkInput verbosity rootdir test where
 
   mkInput :: String -> Either String ([Int], HsInput)
   mkInput input_str = 
@@ -148,7 +158,7 @@ runChunkTest_SHA256 verbosity rootdir test = runSimpleTest'' checkResult mkInput
         putStrLn $ " - actual   = " ++ show hash_str
 
 runChunkTest_SHA512 :: Verbosity -> FilePath -> SimpleHashTest -> IO ()
-runChunkTest_SHA512 verbosity rootdir test = runSimpleTest'' checkResult mkInput verbosity rootdir test where
+runChunkTest_SHA512 verbosity rootdir test = runGenericTest checkResult mkInput verbosity rootdir test where
 
   mkInput :: String -> Either String ([Int], HsInput)
   mkInput input_str = 
@@ -173,11 +183,12 @@ runChunkTest_SHA512 verbosity rootdir test = runSimpleTest'' checkResult mkInput
         putStrLn $ " - actual   = " ++ show hash_str
 
 --------------------------------------------------------------------------------
+-- * generic stuff
 
 runSimpleTest' 
   :: (String -> Either String ([Int], HsInput)) 
   -> Verbosity -> FilePath -> SimpleHashTest -> IO ()
-runSimpleTest' mkInput verbosity rootdir test = runSimpleTest'' checkResult mkInput verbosity rootdir test where
+runSimpleTest' mkInput verbosity rootdir test = runGenericTest checkResult mkInput verbosity rootdir test where
 
   checkResult wtns expected_output_str = do
 
@@ -191,8 +202,28 @@ runSimpleTest' mkInput verbosity rootdir test = runSimpleTest'' checkResult mkIn
         putStrLn $ " - expected = " ++ show expected_output_str
         putStrLn $ " - actual   = " ++ show hash_str
 
-----------------------------------------
+--------------------------------------------------------------------------------
 
+runArithTest :: Verbosity -> FilePath -> ArithHashTest -> IO ()
+runArithTest verbosity rootdir test = runGenericTest checkResult mkInput verbosity rootdir test where
+
+  mkInput :: [Integer] -> Either String ([Int], HsInput)
+  mkInput input = Right ([length input], HsInput input) where
+
+  checkResult wtns expected_output = do
+
+    let result   = extractScalar wtns ("main." ++ __outputSignal test)
+
+    if result == expected_output
+      then putStrLn "OK."
+      else do
+        putStrLn "FAILED!"
+        putStrLn $ " - expected = " ++ show expected_output
+        putStrLn $ " - actual   = " ++ show result
+
+--------------------------------------------------------------------------------
+
+{-
 runSimpleTest'' 
   :: (Witness Name Integer -> String -> IO ()) 
   -> (String -> Either String ([Int], HsInput)) 
@@ -234,5 +265,52 @@ runSimpleTest'' checkResult mkInput verbosity rootdir test = do
             wtns <- loadWitness_ verbosity circuitfiles witnessfiles
         
             checkResult wtns expected_output_str
+-}
 
 --------------------------------------------------------------------------------
+
+runGenericTest
+  :: (Show a, Show b)
+  => (Witness Name Integer -> b -> IO ()) 
+  -> ([a] -> Either String ([Int], HsInput)) 
+  -> Verbosity -> FilePath -> GenericHashTest a b -> IO ()
+runGenericTest checkResult mkInput verbosity rootdir test = do
+
+  putStrLn $ "\nrunning tests for template `" ++ __templateName test ++ "`"
+
+  let circom   = rootdir </> __circomFile test
+
+  forM_ (zip [1..] (__testCases test)) $ \(idx, (input_str, expected_output_str)) -> do
+
+    putStr $ "test case #" ++ show idx ++ ": "
+    hFlush stdout
+
+    case mkInput input_str of
+      Left  msg -> putStrLn msg
+      Right (template_params, hsinput) -> do
+
+        if null input_str
+
+          then do
+            putStrLn "test for empty input string is skipped because of a bug in circom"
+
+          else do
+            let maincomp = MainComponent 
+                  { _templateName   = __templateName test
+                  , _templateParams = template_params
+                  , _publicInputs   = [__inputSignal test]
+                  }
+          
+            circuitfiles <- compileCircomCircuit verbosity circom (Just maincomp)
+            
+            let hsinputs =  HsInputs $ Map.fromList
+                  [ (__inputSignal test , hsinput)
+                  ] 
+        
+            witnessfiles <- computeWitness verbosity circuitfiles hsinputs
+            wtns <- loadWitness_ verbosity circuitfiles witnessfiles
+        
+            checkResult wtns expected_output_str
+
+--------------------------------------------------------------------------------
+

@@ -10,7 +10,7 @@ import Vectors.Keccak
 --------------------------------------------------------------------------------
 
 sha3_224_test :: SimpleHashTest
-sha3_224_test = SimpleHashTest
+sha3_224_test = MkGenericHashTest
   { __circomFile     = "circuits/keccak/sha3_bytes.circom"
   , __templateName   = "SHA3_224_bytes"
   , __inputSignal    = "inp_bytes"
@@ -19,7 +19,7 @@ sha3_224_test = SimpleHashTest
   }
 
 sha3_256_test :: SimpleHashTest
-sha3_256_test = SimpleHashTest
+sha3_256_test = MkGenericHashTest
   { __circomFile     = "circuits/keccak/sha3_bytes.circom"
   , __templateName   = "SHA3_256_bytes"
   , __inputSignal    = "inp_bytes"
@@ -28,7 +28,7 @@ sha3_256_test = SimpleHashTest
   }
 
 sha3_384_test :: SimpleHashTest
-sha3_384_test = SimpleHashTest
+sha3_384_test = MkGenericHashTest
   { __circomFile     = "circuits/keccak/sha3_bytes.circom"
   , __templateName   = "SHA3_384_bytes"
   , __inputSignal    = "inp_bytes"
@@ -37,7 +37,7 @@ sha3_384_test = SimpleHashTest
   }
 
 sha3_512_test :: SimpleHashTest
-sha3_512_test = SimpleHashTest
+sha3_512_test = MkGenericHashTest
   { __circomFile     = "circuits/keccak/sha3_bytes.circom"
   , __templateName   = "SHA3_512_bytes"
   , __inputSignal    = "inp_bytes"
@@ -48,7 +48,7 @@ sha3_512_test = SimpleHashTest
 --------------------------------------------------------------------------------
 
 keccak_224_test :: SimpleHashTest
-keccak_224_test = SimpleHashTest
+keccak_224_test = MkGenericHashTest
   { __circomFile     = "circuits/keccak/keccak_bytes.circom"
   , __templateName   = "Keccak_224_bytes"
   , __inputSignal    = "inp_bytes"
@@ -57,7 +57,7 @@ keccak_224_test = SimpleHashTest
   }
 
 keccak_256_test :: SimpleHashTest
-keccak_256_test = SimpleHashTest
+keccak_256_test = MkGenericHashTest
   { __circomFile     = "circuits/keccak/keccak_bytes.circom"
   , __templateName   = "Keccak_256_bytes"
   , __inputSignal    = "inp_bytes"
@@ -66,7 +66,7 @@ keccak_256_test = SimpleHashTest
   }
 
 keccak_384_test :: SimpleHashTest
-keccak_384_test = SimpleHashTest
+keccak_384_test = MkGenericHashTest
   { __circomFile     = "circuits/keccak/keccak_bytes.circom"
   , __templateName   = "Keccak_384_bytes"
   , __inputSignal    = "inp_bytes"
@@ -75,7 +75,7 @@ keccak_384_test = SimpleHashTest
   }
 
 keccak_512_test :: SimpleHashTest
-keccak_512_test = SimpleHashTest
+keccak_512_test = MkGenericHashTest
   { __circomFile     = "circuits/keccak/keccak_bytes.circom"
   , __templateName   = "Keccak_512_bytes"
   , __inputSignal    = "inp_bytes"
@@ -86,7 +86,7 @@ keccak_512_test = SimpleHashTest
 --------------------------------------------------------------------------------
 
 shake_128_test :: SimpleHashTest
-shake_128_test = SimpleHashTest
+shake_128_test = MkGenericHashTest
   { __circomFile     = "circuits/keccak/sha3_bytes.circom"
   , __templateName   = "SHAKE128_bytes"
   , __inputSignal    = "inp_bytes"
@@ -95,7 +95,7 @@ shake_128_test = SimpleHashTest
   }
 
 shake_256_test :: SimpleHashTest
-shake_256_test = SimpleHashTest
+shake_256_test = MkGenericHashTest
   { __circomFile     = "circuits/keccak/sha3_bytes.circom"
   , __templateName   = "SHAKE256_bytes"
   , __inputSignal    = "inp_bytes"

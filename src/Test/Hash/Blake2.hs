@@ -10,7 +10,7 @@ import Vectors.Blake2
 --------------------------------------------------------------------------------
 
 blake2s_256_test :: SimpleHashTest
-blake2s_256_test = SimpleHashTest
+blake2s_256_test = MkGenericHashTest
   { __circomFile     = "circuits/blake2/blake2s.circom"
   , __templateName   = "Blake2s_bytes"
   , __inputSignal    = "inp_bytes"
@@ -19,7 +19,7 @@ blake2s_256_test = SimpleHashTest
   }
 
 blake2b_256_test :: SimpleHashTest
-blake2b_256_test = SimpleHashTest
+blake2b_256_test = MkGenericHashTest
   { __circomFile     = "circuits/blake2/blake2b.circom"
   , __templateName   = "Blake2b_bytes"
   , __inputSignal    = "inp_bytes"

@@ -11,7 +11,7 @@ import Vectors.SHA2
 -- * tests for the version where the input is a sequence of bytes
 
 sha224_test :: SimpleHashTest
-sha224_test = SimpleHashTest
+sha224_test = MkGenericHashTest
   { __circomFile     = "circuits/sha2/sha224/sha224_hash_bytes.circom"
   , __templateName   = "Sha224_hash_bytes_digest"
   , __inputSignal    = "inp_bytes"
@@ -20,7 +20,7 @@ sha224_test = SimpleHashTest
   }
 
 sha256_test :: SimpleHashTest
-sha256_test = SimpleHashTest
+sha256_test = MkGenericHashTest
   { __circomFile     = "circuits/sha2/sha256/sha256_hash_bytes.circom"
   , __templateName   = "Sha256_hash_bytes_digest"
   , __inputSignal    = "inp_bytes"
@@ -29,7 +29,7 @@ sha256_test = SimpleHashTest
   }
 
 sha384_test :: SimpleHashTest
-sha384_test = SimpleHashTest
+sha384_test = MkGenericHashTest
   { __circomFile     = "circuits/sha2/sha384/sha384_hash_bytes.circom"
   , __templateName   = "Sha384_hash_bytes_digest"
   , __inputSignal    = "inp_bytes"
@@ -38,7 +38,7 @@ sha384_test = SimpleHashTest
   }
 
 sha512_test :: SimpleHashTest
-sha512_test = SimpleHashTest
+sha512_test = MkGenericHashTest
   { __circomFile     = "circuits/sha2/sha512/sha512_hash_bytes.circom"
   , __templateName   = "Sha512_hash_bytes_digest"
   , __inputSignal    = "inp_bytes"
@@ -62,7 +62,7 @@ runTests_SHA2_bytes verbosity rootDir = do
 -- * tests for the version where the input is a sequence of bits
 
 sha224_test_bits :: SimpleHashTest
-sha224_test_bits = SimpleHashTest
+sha224_test_bits = MkGenericHashTest
   { __circomFile     = "circuits/sha2/sha224/sha224_hash_bits.circom"
   , __templateName   = "Sha224_hash_bits_digest"
   , __inputSignal    = "inp_bits"
@@ -71,7 +71,7 @@ sha224_test_bits = SimpleHashTest
   }
 
 sha256_test_bits :: SimpleHashTest
-sha256_test_bits = SimpleHashTest
+sha256_test_bits = MkGenericHashTest
   { __circomFile     = "circuits/sha2/sha256/sha256_hash_bits.circom"
   , __templateName   = "Sha256_hash_bits_digest"
   , __inputSignal    = "inp_bits"
@@ -80,7 +80,7 @@ sha256_test_bits = SimpleHashTest
   }
 
 sha384_test_bits :: SimpleHashTest
-sha384_test_bits = SimpleHashTest
+sha384_test_bits = MkGenericHashTest
   { __circomFile     = "circuits/sha2/sha384/sha384_hash_bits.circom"
   , __templateName   = "Sha384_hash_bits_digest"
   , __inputSignal    = "inp_bits"
@@ -89,7 +89,7 @@ sha384_test_bits = SimpleHashTest
   }
 
 sha512_test_bits :: SimpleHashTest
-sha512_test_bits = SimpleHashTest
+sha512_test_bits = MkGenericHashTest
   { __circomFile     = "circuits/sha2/sha512/sha512_hash_bits.circom"
   , __templateName   = "Sha512_hash_bits_digest"
   , __inputSignal    = "inp_bits"
@@ -113,7 +113,7 @@ runTests_SHA2_bits verbosity rootDir = do
 -- * tests for the versions where the input is a single chunk
 
 sha256_test_chunk :: SimpleHashTest
-sha256_test_chunk = SimpleHashTest
+sha256_test_chunk = MkGenericHashTest
   { __circomFile     = "circuits/sha2/sha256/sha256_hash_chunk.circom"
   , __templateName   = "Sha256_hash_chunk"
   , __inputSignal    = "inp_bits"
@@ -122,7 +122,7 @@ sha256_test_chunk = SimpleHashTest
   }
 
 sha512_test_chunk :: SimpleHashTest
-sha512_test_chunk = SimpleHashTest
+sha512_test_chunk = MkGenericHashTest
   { __circomFile     = "circuits/sha2/sha512/sha512_hash_chunk.circom"
   , __templateName   = "Sha512_hash_chunk"
   , __inputSignal    = "inp_bits"
