@@ -95,6 +95,32 @@ mimcHashMerkleDamgardList list
   $ listArray (1,length list) list
 
 --------------------------------------------------------------------------------
+-- * MiMC p/p stream cipher
+
+type IV = Fr
+
+-- | Encrypt a stream using CFB (Cipher feedback) mode.
+--
+-- Note: The IV should be ideally random and not repeating.
+--
+mimcEncryptCFB :: Key -> IV -> [Fr] -> [Fr] 
+mimcEncryptCFB key iv xs = snd (mapAccumL f iv xs) where
+  f !old !x = let y = mimcEncryptBlock key old + x in (y,y)
+
+-- | Decrypt a stream encoded using CFB (Cipher feedback) mode.
+mimcDecryptCFB :: Key -> IV -> [Fr] -> [Fr]
+mimcDecryptCFB key iv ys = snd (mapAccumL f iv ys) where
+  f !old !y = let x = y - mimcEncryptBlock key old in (y,x)
+
+{-
+key = 123456   :: Fr
+iv  = 78901234 :: Fr
+xs  = map fromInteger [1..10] :: [Fr]
+ys  = mimcEncryptCFB key iv xs
+zs  = mimcDecryptCFB key iv ys
+-}
+
+--------------------------------------------------------------------------------
 -- * MiMC 2p/p (MiMC-Feistel)
 
 -- | MiMC-Feistel 2p/p block cipher, encrypt with key
@@ -169,6 +195,9 @@ mimcSanityTests n = do
   generic "MiMC p/p" "permute(invpermute(x)) == x" rnd_x print_x $ 
     \x -> let z = mimcPermute (mimcInvPermute x) in (x==z)
 
+  generic "MiMC p/p CFB stream cipher" "decrypt(encrypt(xs)) == xs" rnd_ki_xs print_ki_xs $ 
+    \(key,iv,xs) -> let zs = mimcDecryptCFB key iv (mimcEncryptCFB key iv xs) in (xs==zs)
+
   generic "MiMC-Feistel 2p/p" "decrypt(encrypt(x,y)) == (x,y)" rnd_kxy print_kxy $ 
     \(k,xy) -> let zw = mimcFeistelDecryptBlock k (mimcFeistelEncryptBlock k xy) in (xy==zw)
 
@@ -215,6 +244,12 @@ mimcSanityTests n = do
       y <- rndIO :: IO Fr
       return (k,(x,y))
 
+    rnd_ki_xs = do
+      k  <- rndIO :: IO Fr
+      iv <- rndIO :: IO Fr
+      xs <- replicateM 10 rndIO :: IO [Fr]
+      return (k,iv,xs)
+
     print_x x = do
       putStrLn $ "  x = " ++ show x
 
@@ -230,5 +265,10 @@ mimcSanityTests n = do
       putStrLn $ "  k = " ++ show k
       putStrLn $ "  x = " ++ show x
       putStrLn $ "  y = " ++ show y
+
+    print_ki_xs (k,iv,xs) = do
+      putStrLn $ "  key = " ++ show k
+      putStrLn $ "  iv  = " ++ show iv
+      putStrLn $ "  xs  = " ++ show xs
 
 --------------------------------------------------------------------------------

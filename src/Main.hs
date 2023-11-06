@@ -24,16 +24,17 @@ help = do
   putStrLn ""
   putStrLn "where <testsuite> is one of the following:"
   putStrLn ""
-  putStrLn " - sha2        (input = bytes)"
-  putStrLn " - sha2-bits   (input = bits)"
-  putStrLn " - sha2-chunk  (input = single chunk)"
-  putStrLn " - keccak      (original Keccak variant)"
-  putStrLn " - sha3        (NIST Keccak variant)"
-  putStrLn " - shake       (NIST SHA3 XOFs)"
+  putStrLn " - sha2         (input = bytes)"
+  putStrLn " - sha2-bits    (input = bits)"
+  putStrLn " - sha2-chunk   (input = single chunk)"
+  putStrLn " - keccak       (original Keccak variant)"
+  putStrLn " - sha3         (NIST Keccak variant)"
+  putStrLn " - shake        (NIST SHA3 XOFs)"
   putStrLn " - blake2"
-  putStrLn " - mimc        (MiMC and MiMC-Feistel hashes)"
-  putStrLn " - mimc-comp   (various MiMC components)"
   putStrLn " - poseidon2"
+  putStrLn " - mimc         (MiMC and MiMC-Feistel hashes)"
+  putStrLn " - mimc-comp    (various MiMC components)"
+  putStrLn " - mimc-stream  (MiMC stream ciphers)"
   putStrLn ""
 
 main = do
@@ -53,9 +54,10 @@ main = do
       "sha3"           -> Keccak.runTests_SHA3          verbosity rootDir
       "shake"          -> Keccak.runTests_SHAKE         verbosity rootDir
       "blake2"         -> Blake2.runTests_BLAKE2        verbosity rootDir
+      "poseidon2"      -> Poseidon2.runTests_Poseidon2  verbosity rootDir
       "mimc"           -> MiMC.runTests_MiMC            verbosity rootDir
       "mimc-comp"      -> MiMC.runTests_MiMC_components verbosity rootDir
-      "poseidon2"      -> Poseidon2.runTests_Poseidon2  verbosity rootDir
+      "mimc-stream"    -> MiMC.runTests_MiMC_stream     verbosity rootDir
 
       _ -> do
         putStrLn $ "unknown testsuite `" ++ what ++ "`"

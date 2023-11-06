@@ -149,7 +149,6 @@ mimc_decrypt_test = MkGenericHashTest
   , __testCases      = mimc_decrypt_vectors
   }
 
-
 mimc_feistel_encrypt_test :: ArithHashTest
 mimc_feistel_encrypt_test = MkGenericHashTest
   { __circomFile     = "circuits/mimc/mimc-test.circom"
@@ -218,6 +217,47 @@ mimc_feistel_decrypt_vectors =
   , let z = u+v
   ]
 
+--------------------------------------------------------------------------------
+
+mimc_CFB_encrypt_test :: ArithHashTest
+mimc_CFB_encrypt_test = MkGenericHashTest
+  { __circomFile     = "circuits/mimc/mimc-test.circom"
+  , __templateName   = "Test_MiMC_CFB_encrypt"
+  , __inputSignal    = "inp"
+  , __outputSignal   = "out"
+  , __testCases      = mimc_cfb_encrypt_vectors
+  }
+
+mimc_CFB_decrypt_test :: ArithHashTest
+mimc_CFB_decrypt_test = MkGenericHashTest
+  { __circomFile     = "circuits/mimc/mimc-test.circom"
+  , __templateName   = "Test_MiMC_CFB_decrypt"
+  , __inputSignal    = "inp"
+  , __outputSignal   = "out"
+  , __testCases      = mimc_cfb_decrypt_vectors
+  }
+
+mimc_cfb_encrypt_vectors :: [([Integer], Integer)]
+mimc_cfb_encrypt_vectors = 
+  [ (key:iv:inp, frToInteger z)
+  | k<-[0..10]
+  , let key = 666 + k
+  , let iv  = 1234567 - 3*k
+  , let inp = [1..k] 
+  , let out = mimcEncryptCFB (fromInteger key) (fromInteger iv) (map fromInteger inp) 
+  , let z = sum out
+  ]
+
+mimc_cfb_decrypt_vectors :: [([Integer], Integer)]
+mimc_cfb_decrypt_vectors = 
+  [ (key:iv:inp, frToInteger z)
+  | k<-[0..10]
+  , let key = 666 + k
+  , let iv  = 1234567 - 3*k
+  , let inp = [1..k] 
+  , let out = mimcDecryptCFB (fromInteger key) (fromInteger iv) (map fromInteger inp) 
+  , let z = sum out
+  ]
 
 --------------------------------------------------------------------------------
 
@@ -227,9 +267,18 @@ runTests_MiMC verbosity rootDir = do
   runArithTest verbosity rootDir mimc_merkle_damgard_hash_test
   runArithTest verbosity rootDir mimc_feistel_sponge_hash_test
 
+----------
+
+runTests_MiMC_stream :: Verbosity -> FilePath -> IO ()
+runTests_MiMC_stream verbosity rootDir = do
+  putStrLn "running test for MiMC stream ciphers... (input = sequence of field elements)"
+  runArithTest verbosity rootDir mimc_CFB_encrypt_test
+  runArithTest verbosity rootDir mimc_CFB_decrypt_test
+
+----------
+
 runTests_MiMC_components :: Verbosity -> FilePath -> IO ()
 runTests_MiMC_components verbosity rootDir = do
-
   putStrLn "running test for MiMC components..."
 
   runArithTest verbosity rootDir mimc_perm_test

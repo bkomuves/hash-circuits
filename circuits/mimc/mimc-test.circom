@@ -5,6 +5,7 @@ pragma circom 2.0.0;
 
 include "mimc-p-p.circom";
 include "mimc-feistel-2p-p.circom";
+include "mimc-stream-cipher.circom";
 
 //------------------------------------------------------------------------------
 
@@ -92,6 +93,50 @@ template Test_MiMC_Feistel_decrypt(dummy) {
   inp[1] ==> dec.inp[0];
   inp[2] ==> dec.inp[1];
   out    <== dec.out[0] + dec.out[1];
+}
+
+//------------------------------------------------------------------------------
+  
+template Test_MiMC_CFB_encrypt(n) {
+  signal input  inp[n];
+  signal output out;
+
+  signal key;
+  signal iv;
+  signal xs[n-2];
+
+  for(var i=0; i<n-2; i++) { xs[i] <== inp[i+2]; }
+
+  component enc = MiMC_p$p_CFB_encrypt(n-2);
+  enc.key <== inp[0];
+  enc.iv  <== inp[1];
+  enc.inp <== xs;
+
+  var sum = 0;
+  for(var i=0; i<n-2; i++) { sum += enc.out[i]; }
+  out <== sum;
+}
+
+//------------------
+
+template Test_MiMC_CFB_decrypt(n) {
+  signal input  inp[n];
+  signal output out;
+
+  signal key;
+  signal iv;
+  signal xs[n-2];
+
+  for(var i=0; i<n-2; i++) { xs[i] <== inp[i+2]; }
+
+  component enc = MiMC_p$p_CFB_decrypt(n-2);
+  enc.key <== inp[0];
+  enc.iv  <== inp[1];
+  enc.inp <== xs;
+
+  var sum = 0;
+  for(var i=0; i<n-2; i++) { sum += enc.out[i]; }
+  out <== sum;
 }
 
 //------------------------------------------------------------------------------
