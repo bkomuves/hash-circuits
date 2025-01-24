@@ -2,7 +2,7 @@
 hash-circuits
 =============
 
-copyright: (c) 2023 Faulhorn Labs  
+copyright: (c) 2023-2025 Faulhorn Labs  
 author: Balazs Komuves  
 license: MIT  
 disclaimer: Experimental software, use at your own risk!  
@@ -18,7 +18,8 @@ of some popular hash functions:
 - Keccak / SHA3: Keccak-224, Keccak-256, Keccak-384, Keccak-512 + the SHA3 versions
 - SHA3 XOFs: SHAKE128, SHAKE256
 - Blake2: BLAKE2s-256 and BLAKE2b-256
-- Poseidon2 (Merkle tree and sponge construction for the bn128 scalar field and t=3)
+- Poseidon2 (Merkle tree and sponge construction for the bn254 scalar field and t=3)
+- Griffin (permutation only; for the bn254 scalar field and t=3)
 - MiMC: MiMC and MiMC-Feistel block ciphers and hashes (Merkle-Damgard for MiMC and sponge for MiMC-Feistel; bn128 scalar field)
 
 Circom is a programming language describing arithmetic circuits and/or R1CS 
@@ -38,12 +39,14 @@ Approximate counts of nonlinear R1CS constraints:
 - Permutation:
     - Keccak-f[1600]: 146000  (1600 bits)
     - Poseidon2:      240     (3 field elements; approx 760 bits)
+    - Griffin:        96      (3 field elements; approx 760 bits)
     - MiMC:           330     (1 field element;  approx 254 bits)
     - MiMC-Feistel:   660     (2 field elements; approx 507 bits)
 - Compression (two-to-one):
     - SHA256:         26170
     - Keccak256:      144830
     - Poseidon2:      240
+    - Griffin:        96
     - MiMC:           330
 - Hashing (per native chunk):
     - SHA256:         26200   (about 13% less than the one in `circomlib`)
