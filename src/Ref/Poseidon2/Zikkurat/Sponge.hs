@@ -1,4 +1,5 @@
 
+{-# LANGUAGE NumericUnderscores #-}
 module Ref.Poseidon2.Zikkurat.Sponge where
 
 --------------------------------------------------------------------------------
@@ -11,7 +12,12 @@ import Ref.Poseidon2.Zikkurat.Permutation
 
 -- | Sponge construction with rate=1 (capacity=2), zero IV and 10* padding
 spongeRate1 :: [Fr] -> Fr
-spongeRate1 input = go (0,0,0) (pad input) where
+spongeRate1 input = go (0,0,civ) (pad input) where
+
+  -- domain separation:
+  -- capacity IV = (2^64 + 256*t + r)
+  civ :: Fr
+  civ = fromInteger $ 0x1_0000_0000_0000_0301
 
   pad :: [Fr] -> [Fr]
   pad (x:xs) = x : pad xs
@@ -25,7 +31,12 @@ spongeRate1 input = go (0,0,0) (pad input) where
 
 -- | Sponge construction with rate=2 (capacity=1), zero IV and 10* padding
 spongeRate2 :: [Fr] -> Fr
-spongeRate2 input = go (0,0,0) (pad input) where
+spongeRate2 input = go (0,0,civ) (pad input) where
+
+  -- domain separation:
+  -- capacity IV = (2^64 + 256*t + r)
+  civ :: Fr
+  civ = fromInteger $ 0x1_0000_0000_0000_0302
 
   pad :: [Fr] -> [Fr]
   pad (x:y:rest) = x : y : pad rest
