@@ -19,6 +19,7 @@ import Data.Array
 import Control.Monad
 
 import ZK.Algebra.Class.Field
+import ZK.Algebra.Class.Misc
 import ZK.Algebra.Curves.BN128.Fr.Mont
 
 import qualified Ref.MiMC.RoundConst as RC

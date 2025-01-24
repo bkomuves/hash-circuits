@@ -76,6 +76,7 @@ executable hash-circuit-tests
                         Ref.Poseidon2.Zikkurat.Permutation
                         Ref.Poseidon2.Zikkurat.InvPerm
                         Ref.Poseidon2.Zikkurat.RoundConsts
+                        Ref.Griffin.Permutation
                         Ref.MiMC.MiMC
                         Ref.MiMC.RoundConst
                         Ref.Common
@@ -87,6 +88,7 @@ executable hash-circuit-tests
                         Test.Hash.Blake2
                         Test.Hash.MiMC
                         Test.Hash.Poseidon2
+                        Test.Hash.Griffin
                         Test.Runner
                         Test.Misc
 

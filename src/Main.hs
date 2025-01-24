@@ -13,6 +13,7 @@ import qualified Test.Hash.Keccak    as Keccak
 import qualified Test.Hash.Blake2    as Blake2
 import qualified Test.Hash.MiMC      as MiMC
 import qualified Test.Hash.Poseidon2 as Poseidon2
+import qualified Test.Hash.Griffin   as Griffin
 
 --------------------------------------------------------------------------------
 
@@ -32,6 +33,7 @@ help = do
   putStrLn " - shake        (NIST SHA3 XOFs)"
   putStrLn " - blake2"
   putStrLn " - poseidon2"
+  putStrLn " - griffin"
   putStrLn " - mimc         (MiMC and MiMC-Feistel hashes)"
   putStrLn " - mimc-comp    (various MiMC components)"
   putStrLn " - mimc-stream  (MiMC stream ciphers)"
@@ -55,6 +57,7 @@ main = do
       "shake"          -> Keccak.runTests_SHAKE         verbosity rootDir
       "blake2"         -> Blake2.runTests_BLAKE2        verbosity rootDir
       "poseidon2"      -> Poseidon2.runTests_Poseidon2  verbosity rootDir
+      "griffin"        -> Griffin.runTests_Griffin      verbosity rootDir
       "mimc"           -> MiMC.runTests_MiMC            verbosity rootDir
       "mimc-comp"      -> MiMC.runTests_MiMC_components verbosity rootDir
       "mimc-stream"    -> MiMC.runTests_MiMC_stream     verbosity rootDir
